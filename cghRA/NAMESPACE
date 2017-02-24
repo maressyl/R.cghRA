@@ -1,0 +1,66 @@
+# Dependencies
+import(methods)
+import(Rgb)
+importFrom(DNAcopy, "CNA", "smooth.CNA", "segment")
+
+# Constructors
+export("cghRA.design", "Agilent.design", "custom.design")
+export("cghRA.probes", "Agilent.probes", "custom.probes")
+export("cghRA.regions")
+export("cghRA.copies")
+export("cghRA.series")
+export("cghRA.array")
+
+# Classes
+exportClasses("cghRA.design")
+exportClasses("cghRA.probes")
+exportClasses("cghRA.regions")
+exportClasses("cghRA.copies")
+exportClasses("cghRA.series")
+exportClasses("cghRA.array")
+
+# Process
+export("process")
+exportPattern("^process\\.")
+
+# Interface
+export("tk.cghRA")
+export("tk.design")
+export("tk.process")
+export("tk.modelize")
+export("tk.annotate")
+export("tk.series")
+
+# cghRA functions
+export("parseKaryo")
+
+# cghRA.probes functions
+export("blatInstall")
+export("localize")
+export("bias")
+export("WACA")
+
+# cghRA.regions functions
+export("STEPS", "SRA", "LRA")
+export("parallelize")
+export("penetrance")
+export("fillGaps")
+export("GEDI")
+
+# cghRA.copies functions
+export("model.auto")
+export("model.test")
+export("model.apply")
+export("copies")
+export("LCN")
+
+# cnvScore functions
+export("cnvScore")
+export("map2design")
+export("applyMap")
+export("trace2track")
+export("track.CNV.DGVsupp")
+
+# Rgb integration
+export("drawableFromClass.cghRA.probes")
+

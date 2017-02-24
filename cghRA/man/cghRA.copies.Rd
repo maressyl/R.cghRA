@@ -1,0 +1,36 @@
+\name{cghRA.copies-constructor}
+\alias{cghRA.copies}
+\title{
+  cghRA.copies class constructor
+}
+
+\description{
+  This function returns a new \code{\linkS4class{cghRA.copies}} object from various arguments.
+  
+  Notice the \code{new()} alternative can be used to produce an empty object, setting only the fields not the content.
+}
+
+\usage{
+  cghRA.copies(..., warn = TRUE)
+}
+
+\arguments{
+  \item{\dots}{
+    Arguments to be passed through the inherited constructors up to \code{\link{refTable}}.
+}
+  \item{warn}{
+    Single logical value, to be passed to the \code{\linkS4class{cghRA.copies}} \code{check} method.
+}
+}
+
+\value{
+  An object of class \code{\linkS4class{cghRA.copies}}.
+}
+
+\author{
+  Sylvain Mareschal
+}
+
+\seealso{
+  \code{\link{cghRA.copies-class}}, \code{\link{cghRA.regions-class}}, \code{track.table-class}, \code{refTable-class}
+}
