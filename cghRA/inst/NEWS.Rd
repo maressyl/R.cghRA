@@ -6,6 +6,8 @@
     \item{Vignette addition.}
     \item{'states' argument default values harmonized across the package.}
     \item{cghRA.copies$newSTEPS() replaces cghRA.copies$STEPS().}
+    \item{Better rendering for plots in tk.modelize() for Linux and/or R >= 3.4.0.}
+    \item{Better automatic sizing of the plot in tk.browse().}
     \item{cghRA.copies$STEPS() no longer crashes if 'nested' is not 'none' with an empty region table.}
     \item{tk.series() rebuilt, moving some elements to the new tk.annotate().}
     \item{White image at tk.modelize() start.}

@@ -7,11 +7,35 @@ tk.modelize = function(
 		exclude = c("X", "Y", "Xp", "Xq", "Yp", "Yq"),
 		globalTopLevel,
 		localTopLevel,
-		scaleFactor = NA,
-		hscale = 2,
-		vscale = 1
+		render = c("auto", "png", "tkrplot"),
+		tkrplot.scale = 1,
+		png.res = 100,
+		png.file = tempfile(fileext=".png")
 		)
 	{
+	# Check renderer
+	render <- match.arg(render)
+	tcltkVer <- as.double(sub("^([0-9]+\\.[0-9]+).+$", "\\1", tcltk::tclVersion()))
+	if(tcltkVer >= 8.6) {
+		# PNG is not compatible
+		if(render == "auto") render <- "png"
+	} else {
+		# PNG is compatible
+		if(render == "auto")       { render <- "tkrplot"
+		} else if(render == "png") { stop("PNG rendering requires tcltk 8.6 or above")
+		}
+	}
+	
+	# Check if tkrplot is installed
+	if(length(find.package("tkrplot", quiet=TRUE)) == 0L) {
+		tcltk::tkmessageBox(
+			icon = "info",
+			type = "ok",
+			title = "tkrplot package missing",
+			message = "The optional 'tkrplot' package is required to use tk.browse(), please install it and try again."
+		)
+	}
+	
 	# Current file
 	arrayFiles <- character(0)
 	extension <- as.character(NA)
@@ -49,9 +73,9 @@ tk.modelize = function(
 		y <- as.integer(y)
 		
 		# Plot area coordinates in pixels
-		height <- as.numeric(tcltk::tclvalue(tcltk::tkwinfo("height", plotWidget)))
-		yMin <- (1-savePar$plt[3]) * height
-		yMax <- (1-savePar$plt[4]) * height
+		plotHeight <- as.numeric(tcltk::tclvalue(tcltk::tkwinfo("height", plotWidget)))
+		yMin <- (1-savePar$plt[3]) * plotHeight
+		yMax <- (1-savePar$plt[4]) * plotHeight
 		
 		# From pixel area to x range
 		return((y - yMin) / (yMax - yMin) * (savePar$usr[4] - savePar$usr[3]) + savePar$usr[3])
@@ -75,7 +99,7 @@ tk.modelize = function(
 			click.id <<- 0
 			
 			# Update plot
-			refreshPlot()
+			replot()
 		} else {		
 			# Copy number, if available
 			if(!is.na(model['center']) && !is.na(model['width'])) {
@@ -90,7 +114,7 @@ tk.modelize = function(
 			click.id <<- target
 			
 			# Update plot
-			refreshPlot()
+			replot()
 			
 			# Info box
 			tcltk::tkmessageBox(
@@ -193,7 +217,7 @@ tk.modelize = function(
 				model['bw'] <<- newValue
 				tcltk::tclvalue(bwSliderText) <- as.character(newValue)
 			}
-			refreshPlot()
+			replot()
 		}
 	}
 	
@@ -207,7 +231,7 @@ tk.modelize = function(
 				model['center'] <<- newValue
 				tcltk::tclvalue(centerSliderText) <- as.character(newValue)
 			}
-			refreshPlot()
+			replot()
 		}
 	}
 	
@@ -221,7 +245,7 @@ tk.modelize = function(
 				model['width'] <<- newValue
 				tcltk::tclvalue(widthSliderText) <- as.character(newValue)
 			}
-			refreshPlot()
+			replot()
 		}
 	}
 	
@@ -235,7 +259,7 @@ tk.modelize = function(
 				model['peakFrom'] <<- newValue
 				tcltk::tclvalue(fromSliderText) <- as.character(newValue)
 			}
-			refreshPlot()
+			replot()
 		}
 	}
 	
@@ -249,66 +273,138 @@ tk.modelize = function(
 				model['peakTo'] <<- newValue
 				tcltk::tclvalue(toSliderText) <- as.character(newValue)
 			}
-			refreshPlot()
+			replot()
 		}
 	}
 	
-	if(is.na(scaleFactor)) {
-		if(.Platform$OS.type == "unix") { scaleFactor <- 480
-		} else                          { scaleFactor <- 388
+	# Compute current plot area height
+	autoHeight <- function(unit) {
+		if(unit == "px")           { out <- max(300L, as.integer(tcltk::tclvalue(tcltk::tkwinfo("height", plotFrame))))
+		} else if(unit == "scale") { out <- autoHeight("px") / scaleFactor * tkrplot.scale
 		}
+		
+		return(out)
 	}
 	
-	autoVScale = function() {
-		return((as.double(tcltk::tkwinfo("height", plotFrame)) - 30) / scaleFactor)
+	# Compute current plot area width, in pixels
+	autoWidth <- function(unit) {
+		if(unit == "px")           { out <- max(300L, as.integer(tcltk::tclvalue(tcltk::tkwinfo("width", plotFrame))))
+		} else if(unit == "scale") { out <- autoWidth("px") / scaleFactor * tkrplot.scale
+		}
+		
+		return(out)
 	}
 	
-	autoHScale = function() {
-		return((as.double(tcltk::tkwinfo("width", plotFrame)) - 15) / scaleFactor)
-	}
-	
-	resize = function() {
+	resize <- function() {
 		# Automatic sizes
-		vscale <<- autoVScale()
-		hscale <<- autoHScale()
+		if(render == "tkrplot") {
+			vscale <<- autoHeight("scale")
+			hscale <<- autoWidth("scale")
+		} else if(render == "png") {
+			height <<- autoHeight("px")
+			width <<- autoWidth("px")
+		}
 		
 		# Refresh
-		refreshPlot()
+		replot()
 	}
 	
-	refreshPlot <- function(...) {
-		if(index > 0) {
-			# Focus
-			tcltk::tcl("wm", "attributes", globalTopLevel, topmost = 1)
-			
-			# Replot
-			tkrplot::tkrreplot(
-				lab = plotWidget,
-				fun = function() {
-					par(bg="#FFFFFF")
-					savePar <<- model.test(
-						segLogRatios = segLogRatios,
-						segChroms = segChroms,
-						segLengths = segProbes,
-						minDensity = as.double(tcltk::tclvalue(minDensityValue)),
-						model = model,
-						returnPar = TRUE,
-						exclude = exclude,
-						title = basename(arrayFiles[index])
-					)
-					if(!is.null(click.x)) points(x=click.x, y=click.y, pch=1, col="#FF0000")
-				},
-				hscale = hscale,
-				vscale = vscale
-			)
-			
-			# Focus
-			tcltk::tcl("wm", "attributes", globalTopLevel, topmost = 0)
-			tcltk::tkfocus(force=globalTopLevel)
-			
-			# Model was updated
-			enableUpdate()
+	# model.test() call to produce the plot
+	plot.core <- function() {
+		par(bg="#FFFFFF")
+		savePar <<- model.test(
+			segLogRatios = segLogRatios,
+			segChroms = segChroms,
+			segLengths = segProbes,
+			minDensity = as.double(tcltk::tclvalue(minDensityValue)),
+			model = model,
+			returnPar = TRUE,
+			exclude = exclude,
+			title = basename(arrayFiles[index])
+		)
+		if(!is.null(click.x)) points(x=click.x, y=click.y, pch=1, col="#FF0000")
+	}
+	
+	# Welcome screen
+	plot.empty <- function() {
+		par(bg="#FFFFFF", mar=c(0,0,0,0))
+		plot(x=NA, y=NA, xlim=0:1, ylim=0:1, xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
+		text(x=0.5, y=0.5, labels="Welcome to cghRA !\n\nClick \"Select files\" and select *.regions.rdt files to begin.")
+	}
+	
+	# Replot using 'png' rendered
+	plot.png <- function(empty) {
+		# Produce image file
+		png(png.file, width=width, height=height, res=png.res)
+		if(isTRUE(empty)) { plot.empty()
+		} else            { plot.core()
 		}
+		dev.off()
+		
+		# Refresh image
+		tcltk::tkconfigure(plotImage, file=png.file, width=width, height=height)
+		tcltk::tkconfigure(plotWidget, width=width, height=height)
+	}
+	
+	# Replot using 'tkrplot' rendered
+	plot.tkrplot <- function(empty) {
+		tkrplot::tkrreplot(
+			lab = plotWidget,
+			fun = if(isTRUE(empty)) { plot.empty } else { plot.core },
+			hscale = hscale,
+			vscale = vscale
+		)
+	}
+	
+	# Replot common workflow
+	replot <- function(empty=FALSE) {
+		# Check coordinates
+		if(!isTRUE(empty)) empty <- index == 0L
+		
+		# Cursor
+		tcltk::tkconfigure(localTopLevel, cursor="watch")
+		tcltk::.Tcl("update idletasks")
+	
+		# Grab focus to avoid keyboard shortcuts quirks
+		tcltk::tkfocus(plotWidget)
+	
+		# Replot
+		handle(
+			expr = {
+				if(render == "png")            { plot.png(empty=empty)
+				} else if(render == "tkrplot") { plot.tkrplot(empty=empty)
+				}
+			},
+			# Silently ignore message()
+			messageHandler = NULL,
+			# Pass warning() but continue execution
+			warningHandler = function(w) {
+				tcltk::tkmessageBox(
+					parent = localTopLevel,
+					icon = "warning",
+					type = "ok",
+					title = "Warning in model.test()",
+					message = conditionMessage(w)
+				)
+			},
+			# Pass stop() and stop execution
+			errorHandler = function(e) {
+				tcltk::tkmessageBox(
+					parent = localTopLevel, 
+					icon = "error",
+					type = "ok",
+					title = "Error in model.test()",
+					message = conditionMessage(e)
+				)
+			}					
+		)
+	
+		# Model was updated
+		enableUpdate()
+	
+		# Cursor
+		tcltk::tkconfigure(localTopLevel, cursor="arrow")
+		tcltk::.Tcl("update idletasks")
 	}
 	
 	autoAction <- function() {
@@ -332,7 +428,7 @@ tk.modelize = function(
 			exclude = exclude
 		)
 		updateSliders()
-		refreshPlot()
+		replot()
 	}
 	
 	importRdt = function() {
@@ -351,7 +447,7 @@ tk.modelize = function(
 					
 					# Interface update
 					updateSliders()
-					refreshPlot()
+					replot()
 					
 					return(TRUE)
 				} else {
@@ -416,7 +512,7 @@ tk.modelize = function(
 				
 				# Interface update
 				updateSliders()
-				refreshPlot()
+				replot()
 				
 				return(TRUE)
 			} else {
@@ -575,17 +671,32 @@ tk.modelize = function(
 	# Evolutive width
 	tcltk::tkgrid.columnconfigure(localTopLevel, 1, weight=1)
 	tcltk::tkgrid.rowconfigure(localTopLevel, 1, weight=1)
-	
-		# Plot frame
-		plotFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Graphical representation")
-			
-			# R-Plot widget
-			plotWidget <- tkrplot::tkrplot(parent=plotFrame, fun=plot.new, hscale=hscale, vscale=vscale)
-			tcltk::tkgrid(plotWidget, column=1, row=1, padx=5, pady=5, sticky="nsew")
 		
+		# Plot frame
+	###	plotFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Graphical representation")
+		plotFrame <- tcltk::tkframe(parent=localTopLevel)
 		tcltk::tkgrid(plotFrame, column=1, columnspan=2, row=1, padx=5, pady=5, sticky="nsew")
 		tcltk::tkgrid.columnconfigure(plotFrame, 1, weight=1)
 		tcltk::tkgrid.rowconfigure(plotFrame, 1, weight=1)
+		
+			# R-Plot widget (wait for maximization to apply and propagate)
+			tcltk::.Tcl("update idletasks")
+			
+			if(render == "png") {
+				# Default size
+				height <- autoHeight("px")
+				width <- autoWidth("px")
+				
+				# Display (empty) PNG image
+				plotImage <- tcltk::tkimage.create("photo", width=width, height=height)
+				plotWidget <- tcltk::tkcanvas(plotFrame, width=width, height=height)
+				tcltk::tkcreate(plotWidget, "image", 0, 0, anchor="nw", image=plotImage)
+			} else if(render == "tkrplot") {
+				# tkrplot widget
+				plotWidget <- tkrplot::tkrplot(parent=plotFrame, fun=plot.empty, hscale=1, vscale=1)
+			}
+		
+			tcltk::tkgrid(plotWidget, column=1, row=1)
 		
 		# Slider frame
 		sliderFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Model parameters")
@@ -750,7 +861,25 @@ tk.modelize = function(
 		tcltk::tkgrid(fileFrame, column=1, row=4, padx=5, pady=5, sticky="nsew")
 		tcltk::tkgrid.columnconfigure(fileFrame, 4, weight=1)
 	
+	# Guess scale factor from 1 x 1 empty plot
+	if(render == "tkrplot") {
+		# Scale factor (wait for plot update)
+		tcltk::.Tcl("update idletasks")
+		scaleFactor <- as.integer(tcltk::tclvalue(tcltk::tkwinfo("width", plotWidget)))
+		if(scaleFactor < 100) stop("Scale factor detection seems to have failed (", scaleFactor, ")")
 		
+		# Default size
+		vscale <- autoHeight("scale")
+		hscale <- autoWidth("scale")
+		
+		replot(empty=TRUE)
+	} else {
+		# Welcome screen
+		resize()
+		replot(empty=TRUE)
+	}
+	
+	
 
 	## LAUNCH ##
 	
