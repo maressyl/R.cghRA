@@ -34,7 +34,7 @@
     Single character value from the ones listed, defining the rendering engine for the plot. "png" is recommended and the default on any platform supporting it (needs Tcl-tk version 8.6 or higher, already available on Linux and MacOS and on Windows with R version 3.4.0 or above), and consists in displaying an export to a PNG file. "tkrplot" is more limited and kept only for backward compatibility, it relies on the external package \code{tkrplot} and the Windows "metafile" format. "auto" (the dzfault) will select the best engine considering to the capabilities of your installation.
 }
   \item{tkrplot.scale}{
-    Single numeric value, defining a multiplying factor for plot size with the "tkrplot" engine. This argument is mainly provided to temper a bug with the "Font size multiplication factor" feature of last Windows operating system version, and get plots filling the whole Rgb window. As an example if you use a 150% factor in Windows, you should define this argument to 1.5. This has no effect with the "png" engine used on other platforms.
+    Single numeric value, defining a multiplying factor for plot size with the "tkrplot" engine. This argument is mainly provided to temper a bug with the "Font size multiplication factor" feature of last Windows operating system, and get plots filling the whole Tcl-tk window. As an example if you use a 150% factor for fonts and icons in Windows, you should define this argument to 1.5. This has no effect with the "png" engine used on other platforms.
 }
   \item{png.res}{
     Single integer value, the resolution of the plot in Pixels Per Inches. Passed to \code{\link{png}}, see the corresponding manual for further details. This has no effect with the "tkrplot" engine used on Windows prior to R version 3.4.0.

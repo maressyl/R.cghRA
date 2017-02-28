@@ -62,7 +62,6 @@ tk.modelize = function(
 		x <- as.integer(x)
 		
 		# Plot area coordinates in pixels
-		width <- as.numeric(tcltk::tclvalue(tcltk::tkwinfo("width", plotWidget)))
 		xMin <- savePar$plt[1] * width
 		xMax <- savePar$plt[2] * width
 		
@@ -73,9 +72,8 @@ tk.modelize = function(
 		y <- as.integer(y)
 		
 		# Plot area coordinates in pixels
-		plotHeight <- as.numeric(tcltk::tclvalue(tcltk::tkwinfo("height", plotWidget)))
-		yMin <- (1-savePar$plt[3]) * plotHeight
-		yMax <- (1-savePar$plt[4]) * plotHeight
+		yMin <- (1-savePar$plt[3]) * height
+		yMax <- (1-savePar$plt[4]) * height
 		
 		# From pixel area to x range
 		return((y - yMin) / (yMax - yMin) * (savePar$usr[4] - savePar$usr[3]) + savePar$usr[3])
@@ -90,48 +88,50 @@ tk.modelize = function(
 	click.y <- NULL
 	click.id <- 0
 	mousePress = function(x, y) {
-		# Nearest point on the plot
-		target <- closest(xConvert(x), yConvert(y), LCN(segLogRatios, exact=TRUE), segProbes)
-		if(target == click.id) {
-			# Deselect
-			click.x <<- NULL
-			click.y <<- NULL
-			click.id <<- 0
-			
-			# Update plot
-			replot()
-		} else {		
-			# Copy number, if available
-			if(!is.na(model['center']) && !is.na(model['width'])) {
-				copies <- copies(segLogRatios[target], model=model)
-			} else {
-				copies <- NA
-			}
-			
-			# Retain click coordinates
-			click.x <<- LCN(segLogRatios, exact=TRUE)[ target ]
-			click.y <<- segProbes[ target ]
-			click.id <<- target
-			
-			# Update plot
-			replot()
-			
-			# Info box
-			tcltk::tkmessageBox(
-				parent = localTopLevel,
-				icon = "info",
-				type = "ok",
-				title = "Nearest segment",
-				message = sprintf(
-					"logRatio :\t%.5f\nCopies :\t%.2f\n\nProbes :\t%d\nChrom :\t%s\nStart :\t%.6f Mb\nEnd :\t%.6f Mb",
-					segLogRatios[target],
-					copies,
-					segProbes[target],
-					segChroms[target],
-					segStarts[target] / 1e6,
-					segEnds[target] / 1e6		
+		if(index != 0L) {
+			# Nearest point on the plot
+			target <- closest(xConvert(x), yConvert(y), LCN(segLogRatios, exact=TRUE), segProbes)
+			if(target == click.id) {
+				# Deselect
+				click.x <<- NULL
+				click.y <<- NULL
+				click.id <<- 0
+				
+				# Update plot
+				replot()
+			} else {		
+				# Copy number, if available
+				if(!is.na(model['center']) && !is.na(model['width'])) {
+					copies <- copies(segLogRatios[target], model=model)
+				} else {
+					copies <- NA
+				}
+				
+				# Retain click coordinates
+				click.x <<- LCN(segLogRatios, exact=TRUE)[ target ]
+				click.y <<- segProbes[ target ]
+				click.id <<- target
+				
+				# Update plot
+				replot()
+				
+				# Info box
+				tcltk::tkmessageBox(
+					parent = localTopLevel,
+					icon = "info",
+					type = "ok",
+					title = "Nearest segment",
+					message = sprintf(
+						"logRatio :\t%.5f\nCopies :\t%.2f\n\nProbes :\t%d\nChrom :\t%s\nStart :\t%.6f Mb\nEnd :\t%.6f Mb",
+						segLogRatios[target],
+						copies,
+						segProbes[target],
+						segChroms[target],
+						segStarts[target] / 1e6,
+						segEnds[target] / 1e6		
+					)
 				)
-			)
+			}
 		}
 	}
 	
@@ -277,41 +277,21 @@ tk.modelize = function(
 		}
 	}
 	
-	# Compute current plot area height
-	autoHeight <- function(unit) {
-		if(unit == "px")           { out <- max(300L, as.integer(tcltk::tclvalue(tcltk::tkwinfo("height", plotFrame))))
-		} else if(unit == "scale") { out <- autoHeight("px") / scaleFactor * tkrplot.scale
-		}
-		
+	# Compute current plot area height, in pixels
+	autoHeight <- function() {
+		out <- as.integer(tcltk::tclvalue(tcltk::tkwinfo("height", plotFrame))) - 30L
 		return(out)
 	}
 	
 	# Compute current plot area width, in pixels
-	autoWidth <- function(unit) {
-		if(unit == "px")           { out <- max(300L, as.integer(tcltk::tclvalue(tcltk::tkwinfo("width", plotFrame))))
-		} else if(unit == "scale") { out <- autoWidth("px") / scaleFactor * tkrplot.scale
-		}
-		
+	autoWidth <- function() {
+		out <- as.integer(tcltk::tclvalue(tcltk::tkwinfo("width", plotFrame))) - 10L
 		return(out)
-	}
-	
-	resize <- function() {
-		# Automatic sizes
-		if(render == "tkrplot") {
-			vscale <<- autoHeight("scale")
-			hscale <<- autoWidth("scale")
-		} else if(render == "png") {
-			height <<- autoHeight("px")
-			width <<- autoWidth("px")
-		}
-		
-		# Refresh
-		replot()
 	}
 	
 	# model.test() call to produce the plot
 	plot.core <- function() {
-		par(bg="#FFFFFF")
+		par(bg="#FFFFFF", cex=1)
 		savePar <<- model.test(
 			segLogRatios = segLogRatios,
 			segChroms = segChroms,
@@ -351,23 +331,48 @@ tk.modelize = function(
 		tkrplot::tkrreplot(
 			lab = plotWidget,
 			fun = if(isTRUE(empty)) { plot.empty } else { plot.core },
-			hscale = hscale,
-			vscale = vscale
+			hscale = hscale * tkrplot.scale,
+			vscale = vscale * tkrplot.scale
 		)
 	}
+	
+	# Correct tkrplot scale factor
+	changeScale <- function() {
+		tkrplot.scale <<- tk.value(
+			parent = NULL,
+			type = "double",
+			title = "Expansion factor (1 = 100%)",
+			default = tkrplot.scale,
+			allowEmpty = FALSE
+		)
+		replot()
+	}
+	
+	# Pixel / tkrplot "scale" unit conversion factor
+	scaleFactor <- NA
 	
 	# Replot common workflow
 	replot <- function(empty=FALSE) {
 		# Check coordinates
 		if(!isTRUE(empty)) empty <- index == 0L
 		
-		# Cursor
-		tcltk::tkconfigure(localTopLevel, cursor="watch")
-		tcltk::.Tcl("update idletasks")
-	
+		# Guess scale factor from 2 x 1 empty plot (1 scale unit = x un-resized pixels)
+		if(render == "tkrplot" && is.na(scaleFactor)) {
+			scaleFactor <<- as.integer(tcltk::tclvalue(tcltk::tkwinfo("width", plotWidget))) / 2
+			if(scaleFactor < 100) stop("Scale factor detection seems to have failed (", scaleFactor, ")")
+		}
+		
+		# Adjust size
+		height <<- autoHeight()
+		width <<- autoWidth()
+		if(render == "tkrplot") {
+			vscale <<- height / scaleFactor
+			hscale <<- width / scaleFactor
+		}
+		
 		# Grab focus to avoid keyboard shortcuts quirks
 		tcltk::tkfocus(plotWidget)
-	
+		
 		# Replot
 		handle(
 			expr = {
@@ -398,13 +403,16 @@ tk.modelize = function(
 				)
 			}					
 		)
+		
+		# Adjust for Windows's magnifying factor
+		if(render == "tkrplot" && tkrplot.scale > 1) {
+			tcltk::tcl("update", "idletasks")
+			tcltk::tkconfigure(plotWidget, width=width - 10L)
+			tcltk::tkconfigure(plotWidget, height=height)
+		}
 	
 		# Model was updated
 		enableUpdate()
-	
-		# Cursor
-		tcltk::tkconfigure(localTopLevel, cursor="arrow")
-		tcltk::.Tcl("update idletasks")
 	}
 	
 	autoAction <- function() {
@@ -663,8 +671,8 @@ tk.modelize = function(
 		# Top level
 		globalTopLevel <- localTopLevel <- tcltk::tktoplevel(class="cghRA")
 		tcltk::tktitle(localTopLevel) <- "cghRA - Modelization"
-		icon16 <- tcltk::tcl("image", "create", "photo", file=system.file("cghRA_16x16.gif", package="cghRA.copies"))
-		icon32 <- tcltk::tcl("image", "create", "photo", file=system.file("cghRA_32x32.gif", package="cghRA.copies"))
+		icon16 <- tcltk::tcl("image", "create", "photo", file=system.file("cghRA_16x16.gif", package="cghRA"))
+		icon32 <- tcltk::tcl("image", "create", "photo", file=system.file("cghRA_32x32.gif", package="cghRA"))
 		tcltk::tcl("wm", "iconphoto", localTopLevel, "-default", icon16, icon32)
 	}
 	
@@ -673,31 +681,30 @@ tk.modelize = function(
 	tcltk::tkgrid.rowconfigure(localTopLevel, 1, weight=1)
 		
 		# Plot frame
-	###	plotFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Graphical representation")
-		plotFrame <- tcltk::tkframe(parent=localTopLevel)
+		plotFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Graphical representation")
 		tcltk::tkgrid(plotFrame, column=1, columnspan=2, row=1, padx=5, pady=5, sticky="nsew")
-		tcltk::tkgrid.columnconfigure(plotFrame, 1, weight=1)
-		tcltk::tkgrid.rowconfigure(plotFrame, 1, weight=1)
 		
 			# R-Plot widget (wait for maximization to apply and propagate)
 			tcltk::.Tcl("update idletasks")
 			
+			# Default size
+			height <- 300L
+			width <- autoWidth()
+			
 			if(render == "png") {
-				# Default size
-				height <- autoHeight("px")
-				width <- autoWidth("px")
-				
 				# Display (empty) PNG image
 				plotImage <- tcltk::tkimage.create("photo", width=width, height=height)
 				plotWidget <- tcltk::tkcanvas(plotFrame, width=width, height=height)
 				tcltk::tkcreate(plotWidget, "image", 0, 0, anchor="nw", image=plotImage)
 			} else if(render == "tkrplot") {
-				# tkrplot widget
-				plotWidget <- tkrplot::tkrplot(parent=plotFrame, fun=plot.empty, hscale=1, vscale=1)
+				# tkrplot widget (fixed size image to guess scaleFactor)
+				hscale <- 2
+				vscale <- 0.6
+				plotWidget <- tkrplot::tkrplot(parent=plotFrame, fun=plot.empty, hscale=hscale, vscale=vscale)
 			}
-		
-			tcltk::tkgrid(plotWidget, column=1, row=1)
-		
+			
+			tcltk::tkgrid(plotWidget, column=1, row=1, padx=5, pady=5)
+			
 		# Slider frame
 		sliderFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Model parameters")
 			
@@ -838,53 +845,35 @@ tk.modelize = function(
 		tcltk::tkgrid(autoFrame, column=2, row=2, rowspan=3, padx=5, pady=5, sticky="nsew")
 		
 		# File frame
-		fileFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Files")
+		fileFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Actions")
+		tcltk::tkgrid.columnconfigure(fileFrame, 2, weight=1)
+		tcltk::tkgrid.columnconfigure(fileFrame, 6, weight=1)
+			
+			# Resize button
+			resizeButton <- tcltk::tkbutton(parent=fileFrame, text="Adjust plot size", command=changeScale)
+			tcltk::tkgrid(resizeButton, column=1, row=1, padx=5, pady=5)
 			
 			# Previous file
-			previousFileButton <- tcltk::tkbutton(parent=fileFrame, text="Previous", command=previousFile, width=10)
-			tcltk::tkgrid(previousFileButton, column=1, row=1, padx=5, pady=5)
+			previousFileButton <- tcltk::tkbutton(parent=fileFrame, text="Previous", command=previousFile)
+			tcltk::tkgrid(previousFileButton, column=3, row=1, padx=5, pady=5)
 			
 			# Array files
 			arrayFilesValue <- tcltk::tclVar("Select files")
-			arrayFilesButton <- tcltk::tkbutton(parent=fileFrame, textvariable=arrayFilesValue, command=arrayFilesBrowse, width=20)
-			tcltk::tkgrid(arrayFilesButton, column=2, row=1, padx=5, pady=5)
+			arrayFilesButton <- tcltk::tkbutton(parent=fileFrame, textvariable=arrayFilesValue, command=arrayFilesBrowse, width=15)
+			tcltk::tkgrid(arrayFilesButton, column=4, row=1, padx=5, pady=5)
 			
 			# Next file
-			nextFileButton <- tcltk::tkbutton(parent=fileFrame, text="Next", command=nextFile, width=10)
-			tcltk::tkgrid(nextFileButton, column=3, row=1, padx=5, pady=5)
+			nextFileButton <- tcltk::tkbutton(parent=fileFrame, text="Next", command=nextFile)
+			tcltk::tkgrid(nextFileButton, column=5, row=1, padx=5, pady=5)
 			
 			# Update file
-			updateFileButton <- tcltk::tkbutton(parent=fileFrame, text="Update files", command=exportFile, width=10)
-			tcltk::tkgrid(updateFileButton, column=5, row=1, padx=5, pady=5)
+			updateFileButton <- tcltk::tkbutton(parent=fileFrame, text="Update files", command=exportFile)
+			tcltk::tkgrid(updateFileButton, column=7, row=1, padx=5, pady=5)
 			defaultBackground <- as.character(tcltk::tkcget(updateFileButton, "-background"))
 		
 		tcltk::tkgrid(fileFrame, column=1, row=4, padx=5, pady=5, sticky="nsew")
-		tcltk::tkgrid.columnconfigure(fileFrame, 4, weight=1)
-	
-	# Guess scale factor from 1 x 1 empty plot
-	if(render == "tkrplot") {
-		# Scale factor (wait for plot update)
-		tcltk::.Tcl("update idletasks")
-		scaleFactor <- as.integer(tcltk::tclvalue(tcltk::tkwinfo("width", plotWidget)))
-		if(scaleFactor < 100) stop("Scale factor detection seems to have failed (", scaleFactor, ")")
-		
-		# Default size
-		vscale <- autoHeight("scale")
-		hscale <- autoWidth("scale")
-		
-		replot(empty=TRUE)
-	} else {
-		# Welcome screen
-		resize()
-		replot(empty=TRUE)
-	}
-	
-	
-
-	## LAUNCH ##
 	
 	# Events
 	tcltk::tkbind(plotWidget, "<ButtonPress-1>", mousePress)
-	tcltk::tkbind(localTopLevel, "<KeyPress-r>", resize)
 }
 

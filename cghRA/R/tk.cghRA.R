@@ -2,7 +2,8 @@
 # Author : Sylvain Mareschal <mareschal@ovsa.fr>
 
 tk.cghRA = function(
-		blocking = FALSE
+		blocking = FALSE,
+		tkrplot.scale = 1
 		)
 	{
 	
@@ -43,7 +44,7 @@ tk.cghRA = function(
 			
 			# Modelize
 			notebookTab[[3]] <- tcltk::ttkframe(topLevel)
-			tk.modelize(globalTopLevel=topLevel, localTopLevel=notebookTab[[3]])
+			modelizeTopLevel <- tk.modelize(globalTopLevel=topLevel, localTopLevel=notebookTab[[3]], tkrplot.scale=tkrplot.scale)
 			tcltk::tkadd(notebook, notebookTab[[3]], text="Copy number modelization", sticky="nsew")
 			
 			# Annotate

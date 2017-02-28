@@ -27,7 +27,7 @@ exportPattern("^process\\.")
 export("tk.cghRA")
 export("tk.design")
 export("tk.process")
-export("tk.modelize")
+export("tk.modelize", "tk.value")
 export("tk.annotate")
 export("tk.series")
 

@@ -9,12 +9,15 @@
 }
 
 \usage{
-  tk.cghRA(blocking = FALSE)
+  tk.cghRA(blocking = FALSE, tkrplot.scale = 1)
 }
 
 \arguments{
   \item{blocking}{
     Single logical value, whether to wait for the interface window to be closed before unfreezing the R console. The \code{FALSE} default let you use R and the interface in parallel, the code{TRUE} is used essentially in the stand alone version.
+}
+  \item{tkrplot.scale}{
+    Single numeric value to be passed to \code{\link{tk.modelize}}.
 }
 }
 
