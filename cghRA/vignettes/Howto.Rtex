@@ -89,13 +89,13 @@ Users comfortable with CGH array analysis and computers in general may consider 
   \item{In the \strong{Array processing} panel, select the 5 files downloaded at step 2 as "Probe files", the .design.rdt file produced in current R working directory by step 5 as "Design file", uncheck the "WACA correction" box and hit the "Process arrays" button. Here again a log file should pop up, and the computation end in less than a minute. More details about this panel and other formats of array files are provided in chapter \ref{sec:array}.}
   \item{In the \strong{Copy number modelization} panel, click "Select files" to select the .regions.rdt files produced in current R working directory at step 6 and use the "Next" and "Previous" buttons to visualize their copy-number models. These models should be well fit, however feel free to move the cursors to observe how changing parameters influence the copy number modelization. Details about these parameters and the whole modeling process are provided in section \ref{sec:model.auto} and chapter \ref{sec:tk.modelize}.}
   \item{In the \strong{Annotate regions} panel, click "Track(s) to process" to select the .copies.rdt files produced in current R working directory at step 6 and hit the "Export to CSV" blue button. For each selected file, there should now be a .csv file located in the same folder that can be browsed with Excel or any other spread-sheet editor. More details about this step can be found in section \ref{sec:export}.}
-  \item{In the same \strong{Annotate regions} panel, select the "GRCh37.NCBI\_genes.rdt" file downloaded at step 3 as "Annotation track" and hit the "Compute annotation" blue button. Perform again step 8 to observe the new "NCBI genes.name" column. More details about this step can be found in section \ref{sec:annotate_genes}.}
   \item{In the same \strong{Annotate regions} panel, select the "GRCh37.UCSC\_bands.rdt" file downloaded at step 3 as "Annotation track", select "cytoband" as "Crossing type" and hit the "Compute annotation" blue button. Perform again step 8 to observe the new "UCSC bands.cytoband" column. More details about this step can be found in section \ref{sec:annotate_bands}.}
-  \item{In the same \strong{Annotate regions} panel, select the .design.rdt file produced at step 5 as "Design file", the "GRCh37.DGV\_supp.rdt" file downloaded at step 3 as "Polymorphism track", uncheck the "Filter" box and hit the "Compute CNV score" blue button. Perform again step 8 to observe the new "cnvScore" column. More details about polymorphism filtering can be found in chapter \ref{sec:cnvScore}.}
-  \item{In the \strong{Series processing} panel, enter "cghRA vignette" as "Series name", select the .copies.rdt files produced at step 6 as "Region files" and hit the "Compute" blue button. These files will be visualized later, further details about them can be found in section \ref{sec:series_track}.}
+  \item{In the same \strong{Annotate regions} panel, select the "GRCh37.NCBI\_genes.rdt" file downloaded at step 3 as "Annotation track", select "name" as "Crossing type" and hit the "Compute annotation" blue button. Perform again step 8 to observe the new "NCBI genes.name" column. More details about this step can be found in section \ref{sec:annotate_genes}.}
+  \item{In the same \strong{Annotate regions} panel, select the .design.rdt file produced at step 5 as "Design file", the "GRCh37.DGV\_supp.rdt" file downloaded at step 3 as "Polymorphism track", uncheck the "Filter" box and hit the "Compute CNV score" blue button. Perform again step 8 to observe the new "cnvScore" column. More details about polymorphism filtering can be found in chapter \ref{sec:cnvScore}. Feel free to check the "Filter" box and perform this step again to see the difference.}
+  \item{In the \strong{Series processing} panel, enter "cghRA vignette" as "Series name", select the .copies.rdt files produced at step 6 as "Region files" and hit the first blue "Compute" button. Feel free to observe the PNG image files that were produced, the rest of the files will be visualized later. Further details about all these files can be found in section \ref{sec:series_track}.}
   \item{In the same \strong{Series processing} panel, hit the first "Compute" blue button on "STEPS" row. The resulting files will be visualized later, further details about them can be found in section \ref{sec:MCR}.}
   \item{Close cghRA window and execute the command \code{tk.browse()} to use \strong{Rgb} in interactive mode.}
-  \item{Click the "Track" button, then "Add from file" and select the following files : .design.rdt produced at step 5, a set of .probes.rdt, .regions.rdt and .copies.rdt produced at step 6, "GRCh37.NCBI\_genes.rdt" and "GRCh37.UCSC\_bands.rdt" files downloaded at step 3. Then hit the "Done" button.}
+  \item{Click the "Track" button, then "Add from file" and select the following files : .design.rdt produced at step 5, the set of .probes.rdt, .regions.rdt and .copies.rdt produced at step 6 for sample "CHB-05212", "GRCh37.NCBI\_genes.rdt" and "GRCh37.UCSC\_bands.rdt" files downloaded at step 3. Then hit "Done".}
   \item{Type "CDKN2A" in the text field right to the "Find" button, select "NCBI genes" in the nearby menu and hit the "Find" button. The selected tracks should appear in the main window, around the locus of the CDKN2A gene which is frequently deleted in lymphomas. You can use the arrow keys to move around this locus, or refer to chapter \ref{sec:Rgb} for further details about Rgb usage.}
   \item{Click the "Track" button again and add penetrance and pool files produced at step 13. You may want to hide some of the previous tracks checking the "Hide" boxes, to keep them readable on small screens. Once back to the main window, hit the "Jump" button to refresh the plot.}
   \item{Repeat the previous operation with the "STEPS" file produced at step 14.}
@@ -742,13 +742,21 @@ The "Copy number modelization" panel of the graphical interface allows to visual
 
 You will then be able to switch between the selected files using "Previous" and "Next". Don't forget however to save your changes to the model using the "Update files" button before switching, else they will be lost.
 
-Notice that the plot will not automatically be resized if you resize the program window. To force a plot resizing after resizing the window, hit the "R" key of your keyboard.
-
-\subsubsection{Keys to plot interpretation}
+A click on a point of the plot will moreover summon a small popup window, in which you will find various information about the segment it represents (size, genomic location, log-ratio...).
 
 \begin{center}
   \includegraphics[width=12cm]{images/modelize.png}
 \end{center}
+
+\subsubsection{Adjust plot size}
+
+cghRA will try its best to adjust automatically the size of the plot (delimited by a white background) to the size of the bordered frame containing it, each time the plot is refreshed. This is particularly important for the mouse clicks to be correctly mapped to the points which were clicked at.
+
+However on Windows it seems that the magnifying factor that can be set on high resolution screens to keep readable texts and icons is not handled properly by the \code{tkrplot} package on which cghRA relies. If you experience such a case where the plot is constantly smaller than its enclosing frame, click the "Adjust plot size" button. You will be asked for an expansion factor that will be applied to the plot size, and that should correspond to the magnifying factor set in Windows settings (150\% in Windows = 1.5 in cghRA). Once the correct value found, notice that you can launch \code{tk.modelize} and \code{tk.cghRA} directly with the correct setting, filling the \code{tkrplot.scale} argument.
+
+This bug should not be present on Linux and MacOS, and should disappear from Windows starting with R version 3.4.0. In these cases, the rendering is no longer performed by \code{tkrplot} but using PNG images instead. Here the "Adjust plot size" button will only refresh the plot, which can still be useful to make it fill the window again after manually resizing it.
+
+\subsubsection{Keys to plot interpretation}
 
 The plot corresponding to the first selected file should appear in the main frame. In this plot, each genomic segment of the sample is represented by a cross, with the X axis describing its average log-ratio (top axis) or modelized copy number (bottom axis) and the Y axis describing its size (in consecutive probe count). Notice that segments located on sexual chromosomes are plotted with circles rather than crosses, highlighting the fact that they are not considered in the analysis.
 
@@ -1006,7 +1014,7 @@ While all other steps of the analysis described in here focused on one sample at
 \subsection{Produce Rgb track files}
 \label{sec:series_track}
 
-\subsubsection{Output types}
+\subsubsection*{Output types}
 
 A \strong{copy number matrix} is an exhaustive representation of modelized copy-numbers in a two-dimension matrix, with samples in columns and genomic regions in rows. The genome is split in as many rows as necessary to describe all breakpoints found in the series of samples considered, which can be quite high when considering large series of highly rearranged genomes. While not directly visualizable in Rgb, it can be interesting to export such a matrix to CSV and open it with a spread-sheet editor.
 
