@@ -342,10 +342,10 @@ tk.series = function(
 			tcltk::tkgrid(statesLabel, column=1, row=4, padx=5, pady=5)
 			tcltk::tkgrid(statesEntry, column=2, row=4, padx=5, pady=5, sticky="we")
 			
-			# State type spin
+			# State type combobox
 			statesTypeValue <- tcltk::tclVar("copies")
-			statesSpin <- tcltk::ttkspinbox(parent=inputFrame, values=c("copies", "logRatio"), textvariable=statesTypeValue, wrap=1, justify="center", width=8, state="readonly")
-			tcltk::tkgrid(statesSpin, column=3, row=4, padx=5, pady=5)
+			statesCombo <- tcltk::ttkcombobox(parent=inputFrame, values=c("copies", "logRatio"), textvariable=statesTypeValue, justify="center", width=8, state="readonly")
+			tcltk::tkgrid(statesCombo, column=3, row=4, padx=5, pady=5)
 		
 		# Track frame
 		trackFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Produce Rgb track files")
@@ -450,12 +450,12 @@ tk.series = function(
 				tcltk::tkgrid(stepsGpenLabel, column=5, row=1, padx=c(20,5), pady=5)
 				tcltk::tkgrid(stepsGpenEntry, column=6, row=1, padx=5, pady=5, sticky="w")
 				
-				# nested spinbox
+				# nested combobox
 				stepsNestedValue <- tcltk::tclVar("merge")
 				stepsNestedLabel <- tcltk::tklabel(parent=stepsFrame, text="nested :")
-				stepsNestedSpin <- tcltk::ttkspinbox(parent=stepsFrame, values=c("merge", "flag", "none"), textvariable=stepsNestedValue, wrap=1, justify="center", width=6, state="readonly")
+				stepsNestedCombo <- tcltk::ttkcombobox(parent=stepsFrame, values=c("merge", "flag", "none"), textvariable=stepsNestedValue, justify="center", width=6, state="readonly")
 				tcltk::tkgrid(stepsNestedLabel, column=7, row=1, padx=c(20,5), pady=5)
-				tcltk::tkgrid(stepsNestedSpin, column=8, row=1, padx=5, pady=5, sticky="w")
+				tcltk::tkgrid(stepsNestedCombo, column=8, row=1, padx=5, pady=5, sticky="w")
 				
 				# Processing button
 				stepsButton <- tcltk::tkbutton(parent=stepsFrame, text="Compute", background="#A9BEE1", font="Verdana 8 bold", command=stepsProcess)

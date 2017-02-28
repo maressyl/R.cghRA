@@ -415,12 +415,12 @@ tk.annotate = function(
 			tcltk::tkgrid(annoParamFrame, column=2, row=2, sticky="we")
 			tcltk::tkgrid.columnconfigure(annoParamFrame, 7, weight=1)
 			
-				# Type spin
+				# Type combobox
 				annoTypeValue <- tcltk::tclVar("name")
 				annoTypeLabel <- tcltk::tklabel(parent=annoParamFrame, text="Crossing type :")
-				annoTypeSpin <- tcltk::ttkspinbox(parent=annoParamFrame, values=c("name", "cover", "count", "cytoband"), textvariable=annoTypeValue, wrap=1, width=10, justify="center")
+				annoTypeCombo <- tcltk::ttkcombobox(parent=annoParamFrame, values=c("name", "cover", "count", "cytoband"), textvariable=annoTypeValue, width=10, justify="center")
 				tcltk::tkgrid(annoTypeLabel, column=1, row=1, padx=5, pady=5)
-				tcltk::tkgrid(annoTypeSpin, column=2, row=1, padx=c(5,20), pady=5, sticky="w")
+				tcltk::tkgrid(annoTypeCombo, column=2, row=1, padx=c(5,20), pady=5, sticky="w")
 				
 				# Fuzziness input
 				fuzzinessValue <- tcltk::tclVar("50000")
@@ -516,19 +516,19 @@ tk.annotate = function(
 			tcltk::tkgrid(exportParamFrame, column=2, row=1, sticky="we")
 			tcltk::tkgrid.columnconfigure(exportParamFrame, 8, weight=1)
 			
-				# Column separator spin
+				# Column separator combobox
 				exportSepValue <- tcltk::tclVar(",")
 				exportSepLabel <- tcltk::tklabel(parent=exportParamFrame, text="Column separator :")
-				exportSepSpin <- tcltk::ttkspinbox(parent=exportParamFrame, values=c(",", ";", "\\t"), textvariable=exportSepValue, wrap=1, width=2, justify="center")
+				exportSepCombo <- tcltk::ttkcombobox(parent=exportParamFrame, values=c(",", ";", "\\t"), textvariable=exportSepValue, width=2, justify="center")
 				tcltk::tkgrid(exportSepLabel, column=1, row=1, padx=5, pady=5)
-				tcltk::tkgrid(exportSepSpin, column=2, row=1, padx=c(5,20), pady=5, sticky="w")
+				tcltk::tkgrid(exportSepCombo, column=2, row=1, padx=c(5,20), pady=5, sticky="w")
 			
-				# Decimal separator spin
+				# Decimal separator combobox
 				exportDecValue <- tcltk::tclVar(".")
 				exportDecLabel <- tcltk::tklabel(parent=exportParamFrame, text="Decimal separator :")
-				exportDecSpin <- tcltk::ttkspinbox(parent=exportParamFrame, values=c(".", ","), textvariable=exportDecValue, wrap=1, width=2, justify="center")
+				exportDecCombo <- tcltk::ttkcombobox(parent=exportParamFrame, values=c(".", ","), textvariable=exportDecValue, width=2, justify="center")
 				tcltk::tkgrid(exportDecLabel, column=3, row=1, padx=5, pady=5)
-				tcltk::tkgrid(exportDecSpin, column=4, row=1, padx=c(5,20), pady=5, sticky="w")
+				tcltk::tkgrid(exportDecCombo, column=4, row=1, padx=c(5,20), pady=5, sticky="w")
 				
 				# Filtering checkbox
 				exportQuoteValue <- tcltk::tclVar("1")

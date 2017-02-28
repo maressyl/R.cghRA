@@ -360,12 +360,12 @@ tk.design = function(
 			tcltk::tkgrid(inputFileButton, column=1, row=4, padx=5, pady=5)
 			tcltk::tkgrid(inputFileEntry, column=2, columnspan=2, row=4, padx=5, pady=5, sticky="we")
 			
-			# Parser spin
+			# Parser combobox
 			parserValue <- tcltk::tclVar("Agilent.design")
 			parserLabel <- tcltk::tklabel(parent=coreFrame, text="Input file parser", width=20)
-			parserSpin <- tcltk::ttkspinbox(parent=coreFrame, values=c("Agilent.design", "custom.design"), textvariable=parserValue, wrap=1, width=20, justify="center")
+			parserCombo <- tcltk::ttkcombobox(parent=coreFrame, values=c("Agilent.design", "custom.design"), textvariable=parserValue, width=20, justify="center")
 			tcltk::tkgrid(parserLabel, column=1, row=5, padx=5, pady=5)
-			tcltk::tkgrid(parserSpin, column=2, columnspan=2, row=5, padx=5, pady=5, sticky="w")
+			tcltk::tkgrid(parserCombo, column=2, columnspan=2, row=5, padx=5, pady=5, sticky="w")
 			
 			# Output file
 			outputDirValue <- tcltk::tclVar(".")
