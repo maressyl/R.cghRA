@@ -212,8 +212,8 @@ tk.design = function(
 		unlink(logFile)
 		cat(sprintf("%s\n\n", Sys.time()), file=logFile, append=FALSE)
 		cat(sprintf("R %s.%s (%s)\n", R.version$major, R.version$minor, R.version$platform), file=logFile, append=TRUE)
-		for(package in c("cghRA", "cghRA.probes", "IRanges")) {
-			if(length(find.package(package, quiet=TRUE)) > 0) cat(sprintf("%-15s version %s\n", package, packageVersion(package)), file=logFile, append=TRUE)
+		for(package in c("Rgb", "cghRA")) {
+			if(length(find.package(package, quiet=TRUE)) > 0) cat(sprintf("%-10s version %s\n", package, packageVersion(package)), file=logFile, append=TRUE)
 		}
 		cat("\n\n", file=logFile, append=TRUE)
 		
