@@ -137,6 +137,8 @@ tk.annotate = function(
 				return(tcltk::tkmessageBox(parent=localTopLevel, icon="error", type="ok", title="R error", message=conditionMessage(e)))
 			}
 		)
+		
+		# Switch back the cursor
 		tcltk::tkconfigure(localTopLevel, cursor="arrow")
 		
 		# Done
@@ -336,6 +338,9 @@ tk.annotate = function(
 					tcltk::tclvalue(exportProgression) <- as.numeric(tcltk::tclvalue(exportProgression)) + 1
 					tcltk::tcl("update", "idletasks")
 				}
+				
+				# Switch back the cursor
+				tcltk::tkconfigure(localTopLevel, cursor="arrow")
 				
 				# Done
 				tcltk::tkmessageBox(
