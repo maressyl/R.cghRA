@@ -5,7 +5,8 @@ Version: 1.6.0
 Date: 2017-02-20
 Author: Sylvain Mareschal
 Maintainer: Sylvain Mareschal <maressyl@gmail.com>
-URL: http://www.ovsa.fr/R
+URL: http://www.ovsa.fr/cghRA
+BugReports: https://github.com/maressyl/R.cghRA/issues
 Description: Provides functions to import data from Agilent CGH arrays and process them according to the cghRA workflow. Implements several algorithms such as WACA, STEPS and cnvScore and an interactive graphical interface.
 License: GPL (>= 3)
 Depends: methods, Rgb (>= 1.5.0), R (>= 2.10)
