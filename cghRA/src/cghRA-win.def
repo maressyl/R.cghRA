@@ -1,0 +1,4 @@
+LIBRARY cghRA.dll
+EXPORTS
+ R_init_cghRA
+

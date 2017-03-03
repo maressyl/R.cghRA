@@ -1,3 +1,15 @@
+// Wave A-CGH Correction Algorithm implementation (Lepretre et al, Nucleic Acids Res. 2010 Apr;38(7):e94)
+// Author : Sylvain Mareschal <mareschal@ovsa.fr>
+
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+#include <R_ext/Visibility.h>
+
+/*
+	Compute the 5 bias values required by WACA for all provided CGH probes
+*/
+
 void R_WACA(
 	char** chromFile,   // Single chromosome at a time
 	char** sites,       // Multiple fragmentation sites, e.g. "AC|GT"
@@ -10,4 +22,5 @@ void R_WACA(
 	double* wGCprobe,
 	double* wGCfrag,
 	int* wFragSize
-	);
+);
+

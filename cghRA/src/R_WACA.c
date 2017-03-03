@@ -1,9 +1,33 @@
+// Wave A-CGH Correction Algorithm implementation (Lepretre et al, Nucleic Acids Res. 2010 Apr;38(7):e94)
+// Author : Sylvain Mareschal <mareschal@ovsa.fr>
+
 #include <ctype.h>
 #include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "R_WACA.h"
-#include "R.h"
+
+
+// Routine registration (executed at package loading)
+void attribute_visible R_init_cghRA(DllInfo *info) {
+	// R_WACA argument definition
+	R_NativePrimitiveArgType R_WACA_types[] = {
+		STRSXP, STRSXP, INTSXP, INTSXP, INTSXP, INTSXP, REALSXP, REALSXP, REALSXP, REALSXP, INTSXP
+	};
+	
+	// C() calls
+	R_CMethodDef cMethods[] = {
+		{"R_WACA", (DL_FUNC) &R_WACA, 11, R_WACA_types},
+		{NULL, NULL, 0}
+	};
+	
+	// Register all entry points
+	R_registerRoutines(info, cMethods, NULL, NULL, NULL);
+	
+	// Prevent access to all non-registered entry points on Linux, except "attribute_visible" ones
+	// Remember to update "src/cghRA-win.def" file for Windows !
+	R_useDynamicSymbols(info, FALSE);
+}
 
 
 // Preprocessing of an alphabet for FASTA sequence reading
