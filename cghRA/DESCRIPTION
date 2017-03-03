@@ -2,7 +2,7 @@ Package: cghRA
 Type: Package
 Title: Array CGH Data Analysis and Visualization
 Version: 1.6.0
-Date: 2017-02-20
+Date: 2017-03-03
 Author: Sylvain Mareschal
 Maintainer: Sylvain Mareschal <maressyl@gmail.com>
 URL: http://www.ovsa.fr/cghRA

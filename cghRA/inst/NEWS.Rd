@@ -1,9 +1,11 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.6.0 (2017-02-17)}{
+\section{Changes in version 1.6.0 (2017-03-03)}{
   \itemize{
     \item{Manual page cleanup.}
     \item{Vignette addition.}
+    \item{Non-base package functions are now properly identified, to comply with R CMD check.}
+    \item{C entry points are now registered, to comply with R CMD check.}
     \item{'states' argument default values harmonized across the package.}
     \item{cghRA.copies$newSTEPS() replaces cghRA.copies$STEPS().}
     \item{Better rendering for plots in tk.modelize() for Linux and/or R >= 3.4.0.}
