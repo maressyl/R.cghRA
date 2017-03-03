@@ -67,14 +67,14 @@ model.auto = function(
 		if(!is.na(peakFrom)) {
 			fromLCN <- LCN(peakFrom, exact=TRUE)
 			iMax <- iMax[xMax >= fromLCN]
-			xMax <- xMax[xMax >= fromLCN]
 			yMax <- yMax[xMax >= fromLCN]
+			xMax <- xMax[xMax >= fromLCN]
 		}
 		if(!is.na(peakTo)) {
 			toLCN <- LCN(peakTo, exact=TRUE)
 			iMax <- iMax[xMax <= toLCN]
-			xMax <- xMax[xMax <= toLCN]
 			yMax <- yMax[xMax <= toLCN]
+			xMax <- xMax[xMax <= toLCN]
 		}
 		
 		# Bandwidth
