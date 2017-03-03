@@ -3,6 +3,7 @@
 \section{Changes in version 1.6.1 (2017-03-03)}{
   \itemize{
     \item{'peakFrom' / 'peakTo' based filtering fixed in model.auto().}
+    \item{cghRA.regions$proportions() no longer crashes if supplied numeric 'chrom'.}
   }
 }
 \section{Changes in version 1.6.0 (2017-03-03)}{

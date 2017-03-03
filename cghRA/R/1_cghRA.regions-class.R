@@ -287,6 +287,7 @@ proportions = function(chrom=chromosomes(), value="copies", states=list(deletion
 	
 	# Arg check
 	mode <- match.arg(mode)
+	chrom <- as;character(chrom)
 	
 	# Output matrix
 	output <- matrix(
