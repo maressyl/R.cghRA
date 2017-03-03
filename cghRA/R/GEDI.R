@@ -120,8 +120,8 @@ t.tests <- function(x, y, MARGIN=1, alternative=c("two.sided", "less", "greater"
 	my <- sy / ny
 	
 	# T statistics
-	vx <- apply(x, MARGIN, var, na.rm=TRUE)
-	vy <- apply(y, MARGIN, var, na.rm=TRUE)
+	vx <- apply(x, MARGIN, stats::var, na.rm=TRUE)
+	vy <- apply(y, MARGIN, stats::var, na.rm=TRUE)
 	tstat <- (mx - my) / sqrt(vx/nx + vy/ny)
 	
 	# Degrees of freedom
@@ -129,11 +129,11 @@ t.tests <- function(x, y, MARGIN=1, alternative=c("two.sided", "less", "greater"
 	
 	# P-values
 	if(alternative == "less") {
-		pval <- pt(tstat, df)
+		pval <- stats::pt(tstat, df)
 	} else if(alternative == "greater") {
-		pval <- pt(tstat, df, lower.tail = FALSE)
+		pval <- stats::pt(tstat, df, lower.tail = FALSE)
 	} else {
-		pval <- 2 * pt(-abs(tstat), df)
+		pval <- 2 * stats::pt(-abs(tstat), df)
 	}
 	
 	return(cbind(tstat, df, pval))

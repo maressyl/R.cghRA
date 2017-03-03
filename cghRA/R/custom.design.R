@@ -10,7 +10,7 @@ custom.design = function(
 		...
 	) {
 	# File parsing
-	dat <- read.table(
+	dat <- utils::read.table(
 		file = file,
 		sep = "\t",
 		dec = ".",

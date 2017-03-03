@@ -10,5 +10,5 @@ BugReports: https://github.com/maressyl/R.cghRA/issues
 Description: Provides functions to import data from Agilent CGH arrays and process them according to the cghRA workflow. Implements several algorithms such as WACA, STEPS and cnvScore and an interactive graphical interface.
 License: GPL (>= 3)
 Depends: methods, Rgb (>= 1.5.0), R (>= 2.10)
-Imports: DNAcopy
-Suggests: tcltk, tkrplot, parallel, GLAD
+Imports: DNAcopy, utils, stats
+Suggests: tcltk, tkrplot, parallel, GLAD, graphics, grDevices

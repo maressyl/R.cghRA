@@ -27,7 +27,7 @@ process = function(
 	cat(sprintf("%s\n\n", Sys.time()), file=logFile, append=FALSE)
 	cat(sprintf("R %s.%s (%s)\n", R.version$major, R.version$minor, R.version$platform), file=logFile, append=TRUE)
 	for(package in c("Rgb", "cghRA", "DNAcopy")) {
-		if(length(find.package(package, quiet=TRUE)) > 0) cat(sprintf("%-10s version %s\n", package, packageVersion(package)), file=logFile, append=TRUE)
+		if(length(find.package(package, quiet=TRUE)) > 0) cat(sprintf("%-10s version %s\n", package, utils::packageVersion(package)), file=logFile, append=TRUE)
 	}
 	cat("\n\n", file=logFile, append=TRUE)
 	

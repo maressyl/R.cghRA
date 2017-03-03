@@ -124,7 +124,7 @@ process.mask <- function(input, ...) {
 	return(input)
 }
 
-process.replicates <- function(input, replicateFun=median, ...) {
+process.replicates <- function(input, replicateFun=stats::median, ...) {
 	# Checks
 	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
 	

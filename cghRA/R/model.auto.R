@@ -48,7 +48,7 @@ model.auto = function(
 	bw <- from
 	repeat {
 		# Test bandwidth
-		testDensity <- density(
+		testDensity <- stats::density(
 			x = segLCN[ ! segChroms %in% exclude ],
 			bw = bw,
 			kernel = "gaussian",
@@ -86,11 +86,11 @@ model.auto = function(
 		if(scores[b, "peaks"] >= minPeaks) {
 			# Model
 			scores[b, "center"] <- xMax[ which.max(yMax) ]
-			scores[b, "width"] <- median(diff(xMax))
+			scores[b, "width"] <- stats::median(diff(xMax))
 			scores[b, "ploidy"] <- ploidy
 			
 			# Standard Deviation of Diffs
-			scores[b, "sdd"] <- sd(diff(xMax))
+			scores[b, "sdd"] <- stats::sd(diff(xMax))
 			
 			# Peaks to Model
 			ptm <- copies(xMax, from="LCN", center=scores[b, "center"], width=scores[b, "width"], ploidy=scores[b, "ploidy"], exact=TRUE)
@@ -99,7 +99,7 @@ model.auto = function(
 			
 			# Segments to Model
 			stm <- copies(segLCN[ ! segChroms %in% exclude ], from="LCN", center=scores[b, "center"], width=scores[b, "width"], ploidy=scores[b, "ploidy"], exact=TRUE)
-			stm <- weighted.mean(abs(stm - round(stm)), segLengths[ ! segChroms %in% exclude ])
+			stm <- stats::weighted.mean(abs(stm - round(stm)), segLengths[ ! segChroms %in% exclude ])
 			scores[b, "stm"] <- stm
 		}
 		

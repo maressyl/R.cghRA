@@ -127,7 +127,7 @@ parseKaryo <- function(formula, bandTrack, name=as.character(NA), design=NULL, a
 	if(length(genomes) > 1) {
 		# Merge clones
 		para <- parallelize(genomes, value="copies")
-		para$copies <- apply(para[,-(1:3)], 1, weighted.mean, w=weights)
+		para$copies <- apply(para[,-(1:3)], 1, stats::weighted.mean, w=weights)
 		para <- para[,c("chrom","start","end","copies")]
 	} else {
 		# Single clone

@@ -78,7 +78,7 @@ localize = function(
 		}
 		
 		# PSL 3 parsing
-		tab = read.table(
+		tab = utils::read.table(
 			file = outFile,
 			sep = "\t",
 			dec = ".",

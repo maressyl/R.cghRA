@@ -44,7 +44,7 @@ model.test = function(
 	
 	if(!is.na(bw)) {
 		# Segment density
-		segDensity <- density(
+		segDensity <- stats::density(
 			x = segLCN[ ! segChroms %in% exclude ],
 			bw = bw,
 			kernel = "gaussian",
@@ -78,7 +78,7 @@ model.test = function(
 	# Model statistics
 	if(!is.na(bw) && !is.na(center) && !is.na(width)) {
 		# Standard Deviation of Diffs
-		sdd <- sd(diff(xMax))
+		sdd <- stats::sd(diff(xMax))
 		
 		# Peaks to Model
 		ptm <- copies(xMax, from="LCN", center=center, width=width, ploidy=ploidy, exact=TRUE)
@@ -86,7 +86,7 @@ model.test = function(
 		
 		# Segments to Model
 		stm <- copies(segLCN[ ! segChroms %in% exclude ], from="LCN", center=center, width=width, ploidy=ploidy, exact=TRUE)
-		stm <- weighted.mean(abs(stm - round(stm)), segLengths[ ! segChroms %in% exclude ])
+		stm <- stats::weighted.mean(abs(stm - round(stm)), segLengths[ ! segChroms %in% exclude ])
 	} else {
 		sdd <- NA
 		ptm <- NA
@@ -100,28 +100,28 @@ model.test = function(
 		}
 		
 		# Background for ploting (relative copies)
-		if(isTRUE(panel)) { plot(x=NA, y=NA, xlim=rev(ylim), ylim=xlim, xlab="", xaxt="n", ylab="", yaxt="n", ...)
-		} else            { plot(x=NA, y=NA, xlim=xlim,      ylim=ylim, xlab="", xaxt="n", ylab="Segment length", ...)
+		if(isTRUE(panel)) { graphics::plot(x=NA, y=NA, xlim=rev(ylim), ylim=xlim, xlab="", xaxt="n", ylab="", yaxt="n", ...)
+		} else            { graphics::plot(x=NA, y=NA, xlim=xlim,      ylim=ylim, xlab="", xaxt="n", ylab="Segment length", ...)
 		}
-		savePar <- par()
+		savePar <- graphics::par()
 		
 		# Peak range
 		if(!is.na(peakFrom) & !isTRUE(panel)) {
-			rect(
-				xleft = par("usr")[1],
+			graphics::rect(
+				xleft = graphics::par("usr")[1],
 				xright = LCN(peakFrom, exact=TRUE),
-				ybottom = par("usr")[3],
-				ytop = par("usr")[4],
+				ybottom = graphics::par("usr")[3],
+				ytop = graphics::par("usr")[4],
 				col = "#DDDDDD",
 				border = "#DDDDDD"
 			)
 		}
 		if(!is.na(peakTo) & !isTRUE(panel)) {
-			rect(
+			graphics::rect(
 				xleft = LCN(peakTo, exact=TRUE),
-				xright = par("usr")[2],
-				ybottom = par("usr")[3],
-				ytop = par("usr")[4],
+				xright = graphics::par("usr")[2],
+				ybottom = graphics::par("usr")[3],
+				ytop = graphics::par("usr")[4],
 				col = "#DDDDDD",
 				border = "#DDDDDD"
 			)
@@ -131,12 +131,12 @@ model.test = function(
 		if(!isTRUE(panel)) {
 			at = pretty(xlim, n=35)
 			labels = round(log(at/2, 2), 2)
-			mtext(
+			graphics::mtext(
 				side = 3,
 				text = "LogRatios",
 				line = 3
 			)
-			axis(
+			graphics::axis(
 				tck = 1,
 				col = "#CCCCCC",
 				side = 3,
@@ -152,50 +152,50 @@ model.test = function(
 			labels <- ploidy + (-3:3)
 			at <- (labels - ploidy) * width + center
 			if(ploidy == 0) labels <- c("-3", "-2", "-1", "n", "+1", "+2", "+3")
-			axis(
+			graphics::axis(
 				side = ifelse(isTRUE(panel), 2, 1),
 				at = at,
 				labels = labels
 			)
-			title(xlab="Segment copy number")
+			graphics::title(xlab="Segment copy number")
 		}
 		
 		# Real peaks
 		if(!is.na(bw)) {
-			if(isTRUE(panel)) { abline(h=xMax, col="#CC0000", lty="solid")
-			} else            { abline(v=xMax, col="#CC0000", lty="solid")
+			if(isTRUE(panel)) { graphics::abline(h=xMax, col="#CC0000", lty="solid")
+			} else            { graphics::abline(v=xMax, col="#CC0000", lty="solid")
 			}
 		}
 		
 		# Plot density
 		if(!is.na(bw)) {
-			par(new=TRUE)
+			graphics::par(new=TRUE)
 			if(isTRUE(panel)) {
-				plot(x=NA, y=NA, xlim=range(-segDensity$y), ylim=xlim, xlab="", ylab="", xaxt="n", yaxt="n", ...)
-				polygon(x=-segDensity$y, y=segDensity$x, col="#CCCCCC", border="#CCCCCC")
+				graphics::plot(x=NA, y=NA, xlim=range(-segDensity$y), ylim=xlim, xlab="", ylab="", xaxt="n", yaxt="n", ...)
+				graphics::polygon(x=-segDensity$y, y=segDensity$x, col="#CCCCCC", border="#CCCCCC")
 			} else {
-				plot(x=segDensity$x, y=segDensity$y, type="l", xlim=xlim, col="#AAAAAA", xlab="", ylab="", xaxt="n", yaxt="n", ...)
+				graphics::plot(x=segDensity$x, y=segDensity$y, type="l", xlim=xlim, col="#AAAAAA", xlab="", ylab="", xaxt="n", yaxt="n", ...)
 			}
 		}
 		
 		# Plot segments
-		par(new=TRUE)
+		graphics::par(new=TRUE)
 		if(isTRUE(panel)) {
 			pch <- 20L
-			plot(x=segLengths, y=segLCN, xlim=rev(ylim), ylim=xlim, pch=pch, cex=cex.seg, xlab="", ylab="", xaxt="n", yaxt="n", ...)
+			graphics::plot(x=segLengths, y=segLCN, xlim=rev(ylim), ylim=xlim, pch=pch, cex=cex.seg, xlab="", ylab="", xaxt="n", yaxt="n", ...)
 		} else {
 			pch <- rep(3L, length(segLCN))
 			pch[ segChroms %in% exclude ] <- 1L
-			plot(x=segLCN, y=segLengths, xlim=xlim,      ylim=ylim, pch=pch, cex=cex.seg, xlab="", ylab="", xaxt="n", yaxt="n", ...)
+			graphics::plot(x=segLCN, y=segLengths, xlim=xlim,      ylim=ylim, pch=pch, cex=cex.seg, xlab="", ylab="", xaxt="n", yaxt="n", ...)
 		}
 		
 		if(parameters) {
 			# Parameters legend
 			if(isTRUE(panel)) {
-				text(x=ylim[2], y=xlim[2], labels=title, adj=c(0,1), cex=cex.leg)
-				text(x=ylim[2], y=xlim[1], labels=sprintf("%.2f~%.2f [%.3f]", center, width, stm), adj=c(0,0), cex=cex.leg)
+				graphics::text(x=ylim[2], y=xlim[2], labels=title, adj=c(0,1), cex=cex.leg)
+				graphics::text(x=ylim[2], y=xlim[1], labels=sprintf("%.2f~%.2f [%.3f]", center, width, stm), adj=c(0,0), cex=cex.leg)
 			} else {
-				legend(
+				graphics::legend(
 					x = "topleft",
 					legend = c(
 						sprintf("bw = %.3f   ", bw),

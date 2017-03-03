@@ -332,7 +332,7 @@ tk.annotate = function(
 					}
 					
 					# Content
-					suppressWarnings(write.table(content, file=outFile, sep=sep, dec=dec, quote=quote, row.names=FALSE, col.names=TRUE, append=TRUE))
+					suppressWarnings(utils::write.table(content, file=outFile, sep=sep, dec=dec, quote=quote, row.names=FALSE, col.names=TRUE, append=TRUE))
 					
 					# Increment bar
 					tcltk::tclvalue(exportProgression) <- as.numeric(tcltk::tclvalue(exportProgression)) + 1

@@ -38,7 +38,7 @@ penetrance = function(
 			
 			# Chromosome boundaries
 			startingLines <- sort(tapply(X=1:nrow(segParallel), INDEX=segParallel$chrom, FUN=min))
-			endingLines <- c(tail(startingLines - 1L, -1L), nrow(segParallel))
+			endingLines <- c(utils::tail(startingLines - 1L, -1L), nrow(segParallel))
 						
 			# Mask full NA chromosomes
 			unMasked <- matrix(TRUE, ncol=ncol(isInState), nrow=nrow(isInState), dimnames=dimnames(isInState))

@@ -58,7 +58,7 @@ Agilent.probes = function(
 		)
 		
 		# Table read
-		rawData[[i]] = read.table(
+		rawData[[i]] = utils::read.table(
 			file = connection,
 			sep = "\t",
 			dec = ".",

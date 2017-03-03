@@ -291,7 +291,7 @@ tk.modelize = function(
 	
 	# model.test() call to produce the plot
 	plot.core <- function() {
-		par(bg="#FFFFFF", cex=1)
+		graphics::par(bg="#FFFFFF", cex=1)
 		savePar <<- model.test(
 			segLogRatios = segLogRatios,
 			segChroms = segChroms,
@@ -302,24 +302,24 @@ tk.modelize = function(
 			exclude = exclude,
 			title = basename(arrayFiles[index])
 		)
-		if(!is.null(click.x)) points(x=click.x, y=click.y, pch=1, col="#FF0000")
+		if(!is.null(click.x)) graphics::points(x=click.x, y=click.y, pch=1, col="#FF0000")
 	}
 	
 	# Welcome screen
 	plot.empty <- function() {
-		par(bg="#FFFFFF", mar=c(0,0,0,0))
-		plot(x=NA, y=NA, xlim=0:1, ylim=0:1, xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
-		text(x=0.5, y=0.5, labels="Welcome to cghRA !\n\nClick \"Select files\" and select *.regions.rdt files to begin.")
+		graphics::par(bg="#FFFFFF", mar=c(0,0,0,0))
+		graphics::plot(x=NA, y=NA, xlim=0:1, ylim=0:1, xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
+		graphics::text(x=0.5, y=0.5, labels="Welcome to cghRA !\n\nClick \"Select files\" and select *.regions.rdt files to begin.")
 	}
 	
 	# Replot using 'png' rendered
 	plot.png <- function(empty) {
 		# Produce image file
-		png(png.file, width=width, height=height, res=png.res)
+		grDevices::png(png.file, width=width, height=height, res=png.res)
 		if(isTRUE(empty)) { plot.empty()
 		} else            { plot.core()
 		}
-		dev.off()
+		grDevices::dev.off()
 		
 		# Refresh image
 		tcltk::tkconfigure(plotImage, file=png.file, width=width, height=height)
@@ -496,7 +496,7 @@ tk.modelize = function(
 	}
 	
 	importTxt <- function() {
-		tab <- try(read.table(file=arrayFiles[index], sep="\t", dec=".", header=TRUE, stringsAsFactors=FALSE, comment.char="#"), silent=TRUE)
+		tab <- try(utils::read.table(file=arrayFiles[index], sep="\t", dec=".", header=TRUE, stringsAsFactors=FALSE, comment.char="#"), silent=TRUE)
 		if(!is(tab, "try-error")) {
 			if(identical(names(tab), c("chrom", "start", "end", "probes", "logRatio"))) {
 				# Region extraction
@@ -540,7 +540,7 @@ tk.modelize = function(
 		# Save regions to file
 		write(modelLine, file=arrayFiles[index], append=FALSE)
 		suppressWarnings(
-			write.table(
+			utils::write.table(
 				data.frame(
 					chrom = segChroms,
 					start = segStarts,
@@ -563,7 +563,7 @@ tk.modelize = function(
 			fileName <- sub("\\.txt$", ".copies.txt", arrayFiles[index])
 			write(modelLine, file=fileName, append=FALSE)
 			suppressWarnings(
-				write.table(
+				utils::write.table(
 					model.apply(
 						segStarts = segStarts,
 						segEnds = segEnds,

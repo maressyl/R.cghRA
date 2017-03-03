@@ -13,7 +13,7 @@ track.CNV.DGVsupp = function(
 	if(!quiet) message("Parsing data file ...")
 	col.names <-  c("variantaccession", "chr",       "start",   "end",     "varianttype", "variantsubtype", "reference", "pubmedid", "method",    "platform",  "mergedvariants", "supportingvariants", "mergedorsample" ,"frequency", "samplesize", "observedgains", "observedlosses", "cohortdescription", "genes",     "samples")
 	colClasses <- c("character",        "character", "integer", "integer", "character",   "character",      "character", "integer",  "character", "character", "character",      "character",          "character",      "double",    "integer",    "integer",       "integer",        "character",         "character", "character")
-	tab <- read.table(file, header=TRUE, sep="\t", quote="\"", dec=".", col.names=col.names, colClasses=colClasses, comment.char="")
+	tab <- utils::read.table(file, header=TRUE, sep="\t", quote="\"", dec=".", col.names=col.names, colClasses=colClasses, comment.char="")
 	if(!quiet) message(nrow(tab), " variants read")
 
 	# Filter on type

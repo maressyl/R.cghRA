@@ -43,7 +43,7 @@
   process.probes(input, design, ...)
   process.regions(input, ...)
   process.mask(input, ...)
-  process.replicates(input, replicateFun = median, ...)
+  process.replicates(input, replicateFun = stats::median, ...)
   process.waca(input, ...)
   process.spatial(input, outDirectory, ...)
   process.segment(input, segmentArgs = process.default("segmentArgs"), ...)

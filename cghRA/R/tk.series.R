@@ -147,9 +147,9 @@ tk.series = function(
 							for(p in penetrance) dl$add(file=NA, track=p)
 							
 							# Plot
-							png(sprintf("%s/%s penetrance.png", commons$output, commons$series$name), width=width, height=height, res=res)
+							grDevices::png(sprintf("%s/%s penetrance.png", commons$output, commons$series$name), width=width, height=height, res=res)
 							singlePlot(dl)
-							dev.off()							
+							grDevices::dev.off()							
 						}
 					}
 					
@@ -166,9 +166,9 @@ tk.series = function(
 							dl$add(file=NA, track=poolTrack)
 							
 							# Plot
-							png(sprintf("%s/%s pool.png", commons$output, commons$series$name), width=width, height=height, res=res)
+							grDevices::png(sprintf("%s/%s pool.png", commons$output, commons$series$name), width=width, height=height, res=res)
 							singlePlot(dl)
-							dev.off()							
+							grDevices::dev.off()							
 						}
 					}
 					

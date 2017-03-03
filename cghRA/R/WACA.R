@@ -37,7 +37,7 @@ WACA = function(
 		selection = !is.na(probeLogRatios) & !is.na(bias[, biasName])
 		
 		# LOWESS fit and simplification 
-		model = lowess(x=bias[selection, biasName], y=probeLogRatios[selection], f=2/3)
+		model = stats::lowess(x=bias[selection, biasName], y=probeLogRatios[selection], f=2/3)
 		model = as.data.frame(model)
 		model = model[ !duplicated(model$x) ,]
 		
