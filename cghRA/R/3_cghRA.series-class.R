@@ -155,6 +155,7 @@ parallelize = function(value = "logRatio", quiet = FALSE, tracks = TRUE, ...) {
 	para <- cghRA::parallelize(
 		segTables = allSeg,
 		value = value,
+		quiet = quiet,
 		...
 	)
 	

@@ -5,6 +5,7 @@
     \item{'peakFrom' / 'peakTo' based filtering fixed in model.auto().}
     \item{cghRA.regions$proportions() no longer crashes if supplied numeric 'chrom'.}
     \item{cghRA.copies$permute() method added.}
+    \item{cghRA.series$parallelize() and derivated methods now handle correctly quiet=TRUE.}
   }
 }
 \section{Changes in version 1.6.0 (2017-03-03)}{
