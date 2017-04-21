@@ -1,11 +1,11 @@
 # Remap a track to what can be expected from a given CGH-array design
 # Author : Sylvain Mareschal <mareschal@ovsa.fr>
 
-map2design <- function(track, design, minProbes=1, quiet=FALSE, warn=TRUE) {
+map2design <- function(track, design, minProbes=1, minOverlap=NA, quiet=FALSE, warn=TRUE) {
 	# Checks
-	if(!inherits(track, "track.table"))                                   stop("'track' must inherit 'track.table' class")
-	if(!inherits(design, "cghRA.design"))                                 stop("'design' must inherit 'cghRA.design' class")
-	if(length(intersect(design$chromosomes(), track$chromosomes())) == 0) stop("'track' and 'design' chromosomes do not overlap")
+	if(!inherits(track, "track.table"))                                    stop("'track' must inherit 'track.table' class")
+	if(!inherits(design, "cghRA.design"))                                  stop("'design' must inherit 'cghRA.design' class")
+	if(length(intersect(design$chromosomes(), track$chromosomes())) == 0L) stop("'track' and 'design' chromosomes do not overlap")
 	
 	# Grouping identical segments (bp coordinates)
 	if(!isTRUE(quiet)) message("Grouping segments with identical original boundaries ...")
@@ -33,8 +33,17 @@ map2design <- function(track, design, minProbes=1, quiet=FALSE, warn=TRUE) {
 	if(!isTRUE(quiet)) message(0, "/", nrow(mtx))
 	for(i in 1:nrow(mtx)) {
 		if(!isTRUE(quiet) && i %% 5000 == 0) message(i, "/", nrow(mtx))
-		probes <- newDesign$slice(chrom=gChrom[i], start=gStart[i], end=gEnd[i])$id
-		if(length(probes) > 0) {
+		probes <- newDesign$slice(chrom=gChrom[i], start=gStart[i], end=gEnd[i])
+		
+		# Filter probes partially overlapped by the segment (for NGS bins rather than CGH probes)
+		if(!is.na(minOverlap)) {
+			overlap <- (pmin(probes$end, gEnd[i]) - pmax(probes$start, gStart[i])) / (probes$end - probes$start)
+			probes <- probes[ overlap >= minOverlap , "id" ]
+		} else {
+			probes <- probes$id
+		}
+		
+		if(length(probes) > 0L) {
 			mtx[i,"start"] <- probes[ 1L ]
 			mtx[i,"end"] <- probes[ length(probes) ]
 		}

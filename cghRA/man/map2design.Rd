@@ -14,7 +14,7 @@
 }
 
 \usage{
-  map2design(track, design, minProbes = 1, quiet = FALSE, warn = TRUE)
+  map2design(track, design, minProbes = 1, minOverlap=NA, quiet = FALSE, warn = TRUE)
   applyMap(track, map, design)
 }
 
@@ -27,6 +27,9 @@
 }
   \item{minProbes}{
     Single integer value, the amount of probes a segment in \code{track} must cover to be retained.
+}
+  \item{minOverlap}{
+    Single numeric value, the minimal proportion of a probe that needs to be covered by the segment to map for the probe to be considered as involved by this segment (between 0 and 1). This is only relevant with long "probes" (e.g. binned sequencing depth), for microarrays the probes are small enough for this step to be ignored (in this case use the default \code{NA}, which corresponds to 0, to speed up the computation).
 }
   \item{quiet}{
     Single logical value, whether to print diagnostic \code{\link{message}}s or not.
