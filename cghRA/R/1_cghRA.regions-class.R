@@ -74,7 +74,6 @@ initialize = function(model=NA_real_, segmentCall=new("call"), modelizeCall=new(
 	initFields(model=model, segmentCall=segmentCall, modelizeCall=modelizeCall)
 },
 
-
 karyotype = function(bandTrack, value="logRatio", thresholds=c(-0.3, 0.3), precision=2) {
 "Returns a karyotype formula of altered regions.
 - bandTrack    : a track.table object, as returned by track.UCSC_bands().
