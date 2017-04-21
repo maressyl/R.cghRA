@@ -1,9 +1,10 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.6.1 (2017-03-03)}{
+\section{Changes in version 1.6.1 (2017-04-20)}{
   \itemize{
     \item{'peakFrom' / 'peakTo' based filtering fixed in model.auto().}
     \item{cghRA.regions$proportions() no longer crashes if supplied numeric 'chrom'.}
+    \item{cghRA.copies$permute() method added.}
   }
 }
 \section{Changes in version 1.6.0 (2017-03-03)}{
