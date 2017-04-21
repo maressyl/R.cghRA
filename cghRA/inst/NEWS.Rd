@@ -2,6 +2,8 @@
 \title{cghRA package NEWS}
 \section{Changes in version 1.6.1 (2017-04-20)}{
   \itemize{
+    \item{'minPeaks' (down to 1) and 'defWidth' arguments added to model.auto() for normal genomes.}
+    \item{'maxWidth' default changed from 0.9 to 1.1.}
     \item{'peakFrom' / 'peakTo' based filtering fixed in model.auto().}
     \item{cghRA.regions$proportions() no longer crashes if supplied numeric 'chrom'.}
     \item{cghRA.copies$permute() method added.}

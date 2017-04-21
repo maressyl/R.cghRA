@@ -10,10 +10,10 @@
 
 \usage{
   model.auto(segLogRatios, segChroms, segLengths = rep(1, length(segLogRatios)),
-    from = 0.02, to = 0.5, by = 0.001, precision = 512, maxPeaks = 8, minWidth = 0.15,
-    maxWidth = 0.9, minDensity = 0.001, peakFrom = -2, peakTo = 1.3, ploidy = 0,
-    discreet = FALSE, method = c("stm", "sdd", "ptm"), exclude = c("X", "Y", "Xp", "Xq",
-    "Yp", "Yq"))
+    from = 0.02, to = 0.5, by = 0.001, precision = 512, minPeaks = 1, maxPeaks = 8,
+    minWidth = 0.15, maxWidth = 1.1, defWidth = 1, minDensity = 0.001, peakFrom = -2,
+    peakTo = 1.3, ploidy = 0, discreet = FALSE, method = c("stm", "sdd", "ptm"),
+    exclude = c("X", "Y", "Xp", "Xq", "Yp", "Yq"))
 }
 
 \arguments{
@@ -38,6 +38,9 @@
   \item{precision}{
     Single integer value, the amount of points to compute for \code{\link{density}}. As its help page suggests, values greater than 512 should be powers of 2.
 }
+  \item{minPeaks}{
+    Single integer value, the minimal amount of peaks in the density of distribution to consider a model as valid.
+}
   \item{maxPeaks}{
     Single integer value, the maximal amount of peaks in the density of distribution to consider a model as valid.
 }
@@ -46,6 +49,9 @@
 }
   \item{maxWidth}{
     Single double value, maximal value allowed for the \code{width} model parameter (thus for tumoral cell proportion in the sample).
+}
+  \item{defWidth}{
+    Single double value, the value to use for the \code{width} model parameter when only one peak is found. This case usually occurs when there are very few or no alteration at all in the studied genome, which corresponds to a single pure population of cells (width=1).
 }
   \item{minDensity}{
     Single double value, minimal density for a peak to be detected.
