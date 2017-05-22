@@ -96,7 +96,10 @@ model.test = function(
 	if(isTRUE(graph)) {
 		# xlim in modelized copies
 		if(is.numeric(klim) && length(klim) == 2 && all(!is.na(klim))) {
-			xlim <- (klim - ploidy) * width + center
+			# kilm is provided and valid
+			if(!is.na(ploidy) && !is.na(width) && !is.na(center)) { xlim <- (klim - ploidy) * width + center
+			} else                                                { stop("Unable to use 'klim' without a copy-number model")
+			}
 		}
 		
 		# Background for ploting (relative copies)
@@ -128,32 +131,39 @@ model.test = function(
 		}
 		
 		# LogRatios axis
+		at <- pretty(xlim, n=35)
+		at <- at[ at >= 0L ]
+		labels <- round(log(at/2, 2), 2)
 		if(!isTRUE(panel)) {
-			at = pretty(xlim, n=35)
-			labels = round(log(at/2, 2), 2)
 			graphics::mtext(
-				side = 3,
+				side = ifelse(isTRUE(panel), 2, 3),
 				text = "LogRatios",
 				line = 3
 			)
-			graphics::axis(
-				tck = 1,
-				col = "#CCCCCC",
-				side = 3,
-				at = at,
-				cex.axis = cex.l2r,
-				labels = labels,
-				las = 3
-			)
 		}
+		graphics::axis(
+			tck = 1,
+			col = "#CCCCCC",
+			side = ifelse(isTRUE(panel), 2, 3),
+			at = at,
+			labels = FALSE
+		)
+		graphics::mtext(
+			side = ifelse(isTRUE(panel), 2, 3),
+			at = at,
+			cex = cex.l2r,
+			text = ifelse(labels == 0 & isTRUE(panel), "logRatio", labels),
+			las = ifelse(isTRUE(panel), 1, 3),
+			line = ifelse(isTRUE(panel), 0.15, 0.5)
+		)
 		
-		if(!is.na(center) && !is.na(width)) {
+		if(!is.na(center) && !is.na(width) && !isTRUE(panel)) {
 			# Copies axis
 			labels <- ploidy + (-3:3)
 			at <- (labels - ploidy) * width + center
 			if(ploidy == 0) labels <- c("-3", "-2", "-1", "n", "+1", "+2", "+3")
 			graphics::axis(
-				side = ifelse(isTRUE(panel), 2, 1),
+				side = 1,
 				at = at,
 				labels = labels
 			)
@@ -172,7 +182,7 @@ model.test = function(
 			graphics::par(new=TRUE)
 			if(isTRUE(panel)) {
 				graphics::plot(x=NA, y=NA, xlim=range(-segDensity$y), ylim=xlim, xlab="", ylab="", xaxt="n", yaxt="n", ...)
-				graphics::polygon(x=-segDensity$y, y=segDensity$x, col="#CCCCCC", border="#CCCCCC")
+				graphics::polygon(x=-segDensity$y, y=segDensity$x, col="#AAAAAA", border="#AAAAAA")
 			} else {
 				graphics::plot(x=segDensity$x, y=segDensity$y, type="l", xlim=xlim, col="#AAAAAA", xlab="", ylab="", xaxt="n", yaxt="n", ...)
 			}
@@ -192,8 +202,7 @@ model.test = function(
 		if(parameters) {
 			# Parameters legend
 			if(isTRUE(panel)) {
-				graphics::text(x=ylim[2], y=xlim[2], labels=title, adj=c(0,1), cex=cex.leg)
-				graphics::text(x=ylim[2], y=xlim[1], labels=sprintf("%.2f~%.2f [%.3f]", center, width, stm), adj=c(0,0), cex=cex.leg)
+				graphics::text(x=par("usr")[1], y=par("usr")[3], labels=sprintf(" %.3f~%.3f\n STM = %.5f", center, width, stm), adj=c(0, -0.25), cex=cex.leg)
 			} else {
 				graphics::legend(
 					x = "topleft",

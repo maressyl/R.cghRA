@@ -36,7 +36,6 @@ defaultParams = function(...) {
 	params <- callSuper(...)
 	
 	params$drawFun <- "draw.hist"
-	params$column <- "logRatio"
 	params$origin <- 0
 	params$ylim <- c(-3, 3)
 	params$yaxt <- "s"
@@ -49,7 +48,40 @@ defaultParams = function(...) {
 		return(output)
 	}
 	
+	if(modelized()) {
+		params$panel <- TRUE
+		params$column <- "copies"
+	} else {
+		params$panel <- FALSE
+		params$column <- "logRatio"
+	}
+	
 	return(params)
+},
+
+drawPanel = function(chrom=NA, start=NA, end=NA, ...) {
+"Draws a genome-level summary of the content, to be optionnally displayed as a panel on the left of draw() output.
+- chrom   : single integer, numeric or character value, the chromosomal location.
+- start   : single integer or numeric value, inferior boundary of the window. NA should refer to 0.
+- end     : single integer or numeric value, superior boundary of the window. NA should refer to .self$getChromEnd().
+- ...     : additionnal drawing parameters (precede but do not overwrite parameters stored in the object)."
+	
+	# Aggregate and prioritize drawing parameters from classes, objects and draw call
+	argList <- callParams(chrom, start, end, ...)
+	
+	if(argList$column == "copies" && modelized()) {
+		# Use same bottom and top margins as draw()
+		mar <- argList$mar
+		mar[2] <- 2.5
+		mar[4] <- 0.5
+		par(cex=1, mar=mar)
+		
+		# Plot model
+		.self$model.test(klim=argList$ylim, panel=TRUE)
+	} else {
+		# Unable to use same Y axis, use a blank plot
+		plot(x=NA, y=NA, xlim=0:1, ylim=0:1, xaxt="n", yaxt="n", xlab="", ylab="", bty="n")
+	}
 },
 
 fillGaps = function(...) {
@@ -243,7 +275,7 @@ model.apply = function(...) {
 
 model.auto = function(save=TRUE, ...) {
 "Call the model.auto() function to automatically fit a copy-number prediction model.
-- save   : single logical value, whether to save the model or only return it"
+- save   : single logical value, whether to update the object 'model' and 'copies' column or just return the new model."
 	
 	# Apply
 	tmpModel <- cghRA::model.auto(
@@ -253,11 +285,19 @@ model.auto = function(save=TRUE, ...) {
 		...
 	)
 	
-	# Return
 	if(isTRUE(save)) {
+		# Store the model
 		model <<- tmpModel
+		
+		# Store exact copy numbers
+		copies <- copies(x=extract(,"logRatio"), model=model, exact=TRUE, from="logRatios")
+		if("copies" %in% getColNames()) { fill(, "copies", copies)
+		} else                          { addColumn(copies, "copies")
+		}
+		
 		invisible(tmpModel)
 	} else {
+		# Only return the model
 		return(tmpModel)
 	}			
 },
