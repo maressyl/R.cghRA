@@ -1,6 +1,6 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.6.1 (2017-04-20)}{
+\section{Changes in version 1.6.1 (2017-05-22)}{
   \itemize{
     \item{'minPeaks' (down to 1) and 'defWidth' arguments added to model.auto() for normal genomes.}
     \item{'maxWidth' default changed from 0.9 to 1.1.}
@@ -9,6 +9,7 @@
     \item{cghRA.copies$permute() method added.}
     \item{cghRA.series$parallelize() and derivated methods now handle correctly quiet=TRUE.}
     \item{'minOverlap' argument added to map2design().}
+    \item{'filter.size' and 'filter.meth' arguments added to track.CNV.DGVsupp().}
   }
 }
 \section{Changes in version 1.6.0 (2017-03-03)}{

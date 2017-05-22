@@ -6,6 +6,8 @@ track.CNV.DGVsupp = function(
 		file,
 		name = "DGV CNV (supporting variants)",
 		quiet = FALSE,
+		filter.size = TRUE,
+		filter.meth = TRUE,
 		...
 		)
 	{
@@ -26,8 +28,10 @@ track.CNV.DGVsupp = function(
 	tab <- tab[ tab$mergedorsample == "S" ,]
 
 	# Filter on cohort size
-	if(!quiet) message("Filtering on cohort size ...")
-	tab <- tab[ tab$samplesize > 20 ,]
+	if(isTRUE(filter.size)) {
+		if(!quiet) message("Filtering on cohort size ...")
+		tab <- tab[ tab$samplesize > 20 ,]
+	}
 
 	# Filter on chromosome
 	if(!quiet) message("Filtering on chromosome ...")
@@ -53,12 +57,14 @@ track.CNV.DGVsupp = function(
 	### # "Merging" ??? -> co-occurs with "Oligo aCGH"
 
 	# Filter on methods
-	if(!quiet) message("Filtering on method ...")
-	required <- c("Oligo aCGH", "SNP array", "ROMA", "Sequencing")
-	exclude <- c("BAC aCGH", "FISH", "Karyotyping")
-	splitMethod <- strsplit(tab$method, split=",", fixed=TRUE)
-	selected <- sapply(X=splitMethod, FUN=function(x, req, exc){ any(!is.na(match(x, req))) && all(is.na(match(x, exc))) }, req=required, exc=exclude)
-	tab <- tab[ selected ,]
+	if(isTRUE(filter.meth)) {
+		if(!quiet) message("Filtering on method ...")
+		required <- c("Oligo aCGH", "SNP array", "ROMA", "Sequencing")
+		exclude <- c("BAC aCGH", "FISH", "Karyotyping")
+		splitMethod <- strsplit(tab$method, split=",", fixed=TRUE)
+		selected <- sapply(X=splitMethod, FUN=function(x, req, exc){ any(!is.na(match(x, req))) && all(is.na(match(x, exc))) }, req=required, exc=exclude)
+		tab <- tab[ selected ,]
+	}
 
 	if(!quiet) message(nrow(tab), " variants kept")
 

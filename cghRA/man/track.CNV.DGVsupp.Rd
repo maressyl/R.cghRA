@@ -11,7 +11,8 @@
 }
 
 \usage{
-  track.CNV.DGVsupp(file, name = "DGV CNV (supporting variants)", quiet = FALSE, ...)
+  track.CNV.DGVsupp(file, name = "DGV CNV (supporting variants)", quiet = FALSE,
+    filter.size = TRUE, filter.meth = TRUE, ...)
 }
 
 \arguments{
@@ -23,6 +24,12 @@
 }
   \item{quiet}{
     Single logical value, whether to print diagnostic \code{\link{message}}s or not.
+}
+  \item{filter.size}{
+    Single logical value, whether to exclude variants from cohorts smaller than 20 samples or not.
+}
+  \item{filter.meth}{
+    Single logical value, whether to exclude variants identified by low precision methods or not.
 }
   \item{\dots}{
     Further arguments are passed to the class constructor, as a result most of the handled arguments are \code{\link{track.table}} arguments. Consider notably \code{.organism} and \code{.assembly} for track annotation.
