@@ -202,7 +202,7 @@ model.test = function(
 		if(parameters) {
 			# Parameters legend
 			if(isTRUE(panel)) {
-				graphics::text(x=par("usr")[1], y=par("usr")[3], labels=sprintf(" %.3f~%.3f\n STM = %.5f", center, width, stm), adj=c(0, -0.25), cex=cex.leg)
+				graphics::text(x=graphics::par("usr")[1], y=graphics::par("usr")[3], labels=sprintf(" %.3f~%.3f\n STM = %.5f", center, width, stm), adj=c(0, -0.25), cex=cex.leg)
 			} else {
 				graphics::legend(
 					x = "topleft",
