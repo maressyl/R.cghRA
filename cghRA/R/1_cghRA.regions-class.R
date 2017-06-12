@@ -289,8 +289,12 @@ model.auto = function(save=TRUE, ...) {
 		# Store the model
 		model <<- tmpModel
 		
-		# Store exact copy numbers
-		copies <- copies(x=extract(,"logRatio"), model=model, exact=TRUE, from="logRatios")
+		# Compute exact copy numbers
+		if(modelized()) { copies <- copies(x=extract(,"logRatio"), model=model, exact=TRUE, from="logRatios")
+		} else          { copies <- rep(as.numeric(NA), rowCount)
+		}
+		
+		# Store as a column
 		if("copies" %in% getColNames()) { fill(, "copies", copies)
 		} else                          { addColumn(copies, "copies")
 		}

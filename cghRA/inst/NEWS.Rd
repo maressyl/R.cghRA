@@ -12,6 +12,7 @@
     \item{'filter.size' and 'filter.meth' arguments added to track.CNV.DGVsupp().}
     \item{'filter.size' default in track.CNV.DGVsupp() is now FALSE.}
     \item{cghRA.regions$drawPanel() method added.}
+    \item{cghRA.regions$model.auto() store exact copy numbers (NA if not modelized).}
   }
 }
 \section{Changes in version 1.6.0 (2017-03-03)}{
