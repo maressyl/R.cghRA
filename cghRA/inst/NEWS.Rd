@@ -1,6 +1,6 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.6.1 (2017-05-22)}{
+\section{Changes in version 1.6.1 (2017-06-12)}{
   \itemize{
     \item{'minPeaks' (down to 1) and 'defWidth' arguments added to model.auto() for normal genomes.}
     \item{'maxWidth' default changed from 0.9 to 1.1.}
