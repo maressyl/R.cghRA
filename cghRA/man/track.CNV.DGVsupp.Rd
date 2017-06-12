@@ -12,7 +12,7 @@
 
 \usage{
   track.CNV.DGVsupp(file, name = "DGV CNV (supporting variants)", quiet = FALSE,
-    filter.size = TRUE, filter.meth = TRUE, ...)
+    filter.size = FALSE, filter.meth = TRUE, ...)
 }
 
 \arguments{

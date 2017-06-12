@@ -6,7 +6,7 @@ track.CNV.DGVsupp = function(
 		file,
 		name = "DGV CNV (supporting variants)",
 		quiet = FALSE,
-		filter.size = TRUE,
+		filter.size = FALSE,
 		filter.meth = TRUE,
 		...
 		)

@@ -10,6 +10,7 @@
     \item{cghRA.series$parallelize() and derivated methods now handle correctly quiet=TRUE.}
     \item{'minOverlap' argument added to map2design().}
     \item{'filter.size' and 'filter.meth' arguments added to track.CNV.DGVsupp().}
+    \item{'filter.size' default in track.CNV.DGVsupp() is now FALSE.}
     \item{cghRA.regions$drawPanel() method added.}
   }
 }
