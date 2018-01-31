@@ -71,22 +71,27 @@ localize = function(
 			stop("[BLAT] ", paste(output, collapse="\n"))
 		}
 		
-		# File check
+		# File format check
 		header = scan(outFile, "", sep="\n", n=1, quiet=TRUE)
 		if(header != "psLayout version 3") {
 			stop("Unhandled output type (psLayout version 3 expected)")
 		}
 		
+		# Localize the end of the header
+		sample <- scan(outFile, "", sep="\n", n=10, quiet=TRUE, blank.lines.skip=FALSE)
+		headerEnd <- grep("^-+$", sample)
+		if(is.na(headerEnd)) stop("Unable to find the header separation in PSL output file")
+		
 		# PSL 3 parsing
-		tab = utils::read.table(
+		tab <- utils::read.table(
 			file = outFile,
 			sep = "\t",
 			dec = ".",
-			header = TRUE,
+			header = FALSE,
 			stringsAsFactors = FALSE,
 			col.names = c("matches", "misMatches", "repMatches", "nCount", "qNumInsert", "qBaseInsert", "tNumInsert", "tBaseInsert", "strand", "qName", "qSize", "qStart", "qEnd", "tName", "tSize", "tStart", "tEnd", "blockCount", "blockSizes", "qStarts", "tStarts"),
 			colClasses = c("integer", "integer", "integer", "integer", "integer", "integer", "integer", "integer", "character", "character", "integer", "integer", "integer", "character", "integer", "integer", "integer", "integer", "character", "character", "character"),
-			skip = 5
+			skip = headerEnd
 		)
 		
 		# Data appending
