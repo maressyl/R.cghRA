@@ -306,3 +306,61 @@ process.export <- function(input, outDirectory, ...) {
 	}
 }
 
+process.cnvScore <- function(input, design, dgv.map, cnvScoreCol="cnvScore", ...) {
+	# Checks
+	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design))     stop("'design' must be an existing file name")
+	if(!is.character(dgv.map) || length(dgv.map) != 1 || is.na(dgv.map) || !file.exists(dgv.map)) stop("'dgv.map' must be an existing file name")
+	if(!grepl("\\.rds$", dgv.map, ignore.case=TRUE)) stop("process.cnvScore() requires 'dgv.map' to be a \".rds\" file")
+	if(!grepl("\\.rdt$", design, ignore.case=TRUE)) stop("process.array() requires 'design' to be a \".rdt\" file")
+	
+	# Import components
+	dgv.map <- readRDS(dgv.map)
+	design <- readRDT(design)
+	
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	# Update 'input' directly
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "track.table")) stop("'input' must be track.table objects (#", i, ")")
+		
+		# Remap segments to current design
+		obj.map <- map2design(input[[i]], design, quiet=TRUE)
+		
+		# Compute CNV score
+		score <- cnvScore(obj.map, dgv.map, expand=TRUE, quiet=TRUE)
+		
+		# Store / Replace in table
+		if(cnvScoreCol %in% input[[i]]$getColNames()) input[[i]]$delColumns(cnvScoreCol)
+		input[[i]]$addColumn(score, cnvScoreCol)
+	}
+	
+	if(multiple) { return(input)
+	} else       { return(input[[1]])
+	}
+}
+
+process.filter <- function(input, filter=NULL, ...) {
+	# Checks
+	if(!is.expression(filter)) stop("'filter' must be an R expression")
+	
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	out <- vector(mode="list", length=length(input))
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "refTable")) stop("'input' must be refTable objects (#", i, ")")
+		
+		# Extract
+		out[[i]] <- input[[i]]$extract(filter, asObject=TRUE)
+	}
+	
+	if(multiple) { return(out)
+	} else       { return(out[[1]])
+	}
+}
+

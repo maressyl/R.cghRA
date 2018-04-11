@@ -52,6 +52,8 @@
   process.applyModel(input, ...)
   process.fittest(input, ...)
   process.export(input, outDirectory, ...)
+  process.cnvScore(input, design, dgv.map, cnvScoreCol = "cnvScore", ...)
+  process.filter(input, filter = NULL, ...)
   tk.process(globalTopLevel, localTopLevel)
   process.default(argName, profileName)
 }
@@ -99,6 +101,15 @@
   \item{modelizeArgs}{
     Single character value, the arguments to be passed to the \code{model.auto} method of the \code{\linkS4class{cghRA.array}} class. Arguments are defined as a character string that will be parsed.
 }
+  \item{dgv.map}{
+    Single character value, the path and name of a RDS file containing a \code{\linkS4class{segmentMap}} object to be passed to \code{\link{cnvScore}}.
+}
+  \item{cnvScoreCol}{
+    Single character value, the name of the column that should be produced (or replaced) with the newly computed CNV score.
+}
+  \item{filter}{
+    An R expression referring to columns as variables and returning a subsetting vector (either logical or numeric).
+}
   \item{argName}{
     Single character value, 'segmentArgs' or 'modelizeArgs', the argument to get the default value for. If missing, the list of profiles and arguments handled is returned.
 }
@@ -129,7 +140,13 @@
     \item{applyModel}{Convert a modelized \code{cghRA.regions} objects into \code{cghRA.copies}.}
     \item{fittest}{If multiple segmentation profiles have been used, select the fittest model ("copies" and "regions" files duplicated without number). For further details on the STM score used for fittest model selection, see the \code{model.auto} function of the cghRA.copies package.}
     \item{clean}{Erase "copies" and "regions" files of the different segmentation profiles tested, as "fittest" should have saved the best.}
-  }  
+  }
+  
+  The following steps are currently optional :
+  \describe{
+    \item{cnvScore}{Compute for each segment of a \code{track.table} object its likelihood to be a polymorphism (see \code{\link{cnvScore}}).}
+    \item{filter}{Remove rows from a \code{refTable} object using an expression based on column names.}
+  }
 }
 
 \value{

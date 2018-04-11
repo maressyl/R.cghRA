@@ -1,5 +1,11 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
+\section{Changes in version 1.6.2 (2018-04-11)}{
+  \itemize{
+    \item{localize() no longer skips the first result row.}
+    \item{'process.cnvScore' and 'process.filter' steps added to process().}
+  }
+}
 \section{Changes in version 1.6.1 (2017-06-12)}{
   \itemize{
     \item{'minPeaks' (down to 1) and 'defWidth' arguments added to model.auto() for normal genomes.}
