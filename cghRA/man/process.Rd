@@ -16,6 +16,8 @@
 \alias{process.applyModel}
 \alias{process.fittest}
 \alias{process.export}
+\alias{process.cnvScore}
+\alias{process.filter}
 \alias{process.default}
 \title{
   cghRA array processing
