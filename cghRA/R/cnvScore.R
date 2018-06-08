@@ -11,8 +11,10 @@
 
 cnvScore <- function(sample.map, dgv.map, hangingThreshold=0.8, minGain=0.1, maxPaths=NA, trace=FALSE, expand=TRUE, quiet=TRUE) {
 	# Checks
-	if(!inherits(sample.map, "segmentMap")) stop("'sample.map' must inherit 'segmentMap' class")
-	if(!inherits(dgv.map, "segmentMap"))    stop("'dgv.map' must inherit 'segmentMap' class")
+	if(!inherits(sample.map, "segmentMap"))         stop("'sample.map' must inherit 'segmentMap' class")
+	if(!inherits(dgv.map, "segmentMap"))            stop("'dgv.map' must inherit 'segmentMap' class")
+	if(sample.map$designSize != dgv.map$designSize) stop("'sample.map' and 'dgv.map' were not mapped to the same design (designSize)")
+	if(sample.map$designName != dgv.map$designName) warning("'sample.map' and 'dgv.map' may not have been mapped to the same design (designName)")
 	
 	# Final segment score storage
 	out <- double(nrow(sample.map$map))

@@ -1,9 +1,10 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.6.2 (2018-04-11)}{
+\section{Changes in version 1.6.2 (2018-06-08)}{
   \itemize{
     \item{localize() no longer skips the first result row.}
     \item{'process.cnvScore' and 'process.filter' steps added to process().}
+    \item{cnvScore() now checks whether the objects were mapped to the same design or not.}
   }
 }
 \section{Changes in version 1.6.1 (2017-06-12)}{
