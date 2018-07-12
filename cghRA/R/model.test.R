@@ -39,17 +39,21 @@ model.test = function(
 	
 	# Log-ratio related Copy Numbers (LCN)
 	segLCN <- LCN(segLogRatios, exact=TRUE)
-	segWeights <- segLengths[ ! segChroms %in% exclude ]
-	segWeights <- segWeights / sum(segWeights)
+	
+	# Filter
+	f <- ! segChroms %in% exclude & !is.na(segLCN)
+	if(!any(f)) stop("Unable to plot density with only NAs")
+	segLogRatios <- segLogRatios[f]
+	segLengths <- segLengths[f]
+	segChroms <- segChroms[f]
+	segLCN <- segLCN[f]
+	
+	# Weights
+	segWeights <- segLengths / sum(segLengths)
 	
 	if(!is.na(bw)) {
 		# Segment density
-		segDensity <- stats::density(
-			x = segLCN[ ! segChroms %in% exclude ],
-			bw = bw,
-			kernel = "gaussian",
-			weights = segWeights
-		)
+		segDensity <- stats::density(x=segLCN, bw=bw, kernel="gaussian", weights=segWeights)
 		
 		# Local maxima
 		y <- segDensity$y / max(segDensity$y)
@@ -86,7 +90,7 @@ model.test = function(
 		
 		# Segments to Model
 		stm <- copies(segLCN[ ! segChroms %in% exclude ], from="LCN", center=center, width=width, ploidy=ploidy, exact=TRUE)
-		stm <- stats::weighted.mean(abs(stm - round(stm)), segLengths[ ! segChroms %in% exclude ])
+		stm <- stats::weighted.mean(abs(stm - round(stm)), segLengths[ ! segChroms %in% exclude ], na.rm=TRUE)
 	} else {
 		sdd <- NA
 		ptm <- NA

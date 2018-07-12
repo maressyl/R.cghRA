@@ -69,7 +69,7 @@ drawPanel = function(chrom=NA, start=NA, end=NA, ...) {
 	# Aggregate and prioritize drawing parameters from classes, objects and draw call
 	argList <- callParams(chrom, start, end, ...)
 	
-	if(argList$column == "copies" && modelized()) {
+	if(argList$column == "copies" && modelized() && any(!is.na(.self$extract(,"logRatio")))) {
 		# Use same bottom and top margins as draw()
 		mar <- argList$mar
 		mar[2] <- 2.5
