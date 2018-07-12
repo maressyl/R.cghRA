@@ -27,6 +27,7 @@ model.test = function(
 		title = NULL,
 		panel = FALSE,
 		klim = NULL,
+		l2r.points = c(35, 10),
 		...
 		)
 	{
@@ -135,8 +136,8 @@ model.test = function(
 		}
 		
 		# LogRatios axis
-		at <- pretty(xlim, n=35)
-		at <- at[ at >= 0L ]
+		at <- pretty(xlim, n=l2r.points[panel+1L])
+		at <- at[ at > 0L ]
 		labels <- round(log(at/2, 2), 2)
 		if(!isTRUE(panel)) {
 			graphics::mtext(

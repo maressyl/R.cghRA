@@ -16,7 +16,7 @@
     parameters = TRUE, returnPar = FALSE, xlim = c(0, 5), ylim = c(0, max(segLengths)),
     xlab = "Segment copy number", ylab = "Segment length", cex.seg = 0.4, cex.leg = 0.7,
     cex.l2r = 0.7, exclude = c("X", "Y", "Xp", "Xq", "Yp", "Yq"), title = NULL,
-    panel = FALSE, klim = NULL, ...)
+    panel = FALSE, klim = NULL, l2r.points = c(35, 10), ...)
 }
 
 \arguments{
@@ -94,6 +94,9 @@
 }
   \item{klim}{
     Double vector of two values, alternative definition of \code{xlim} in modelized copy numbers rather than LCN.
+}
+  \item{l2r.points}{
+    Integer vector of two values, the approximate number of values to plot on the logRatio axis respectively in full and \code{panel} mode.
 }
   \item{\dots}{
     Further graphical arguments to be passed to \code{\link{plot}}.

@@ -6,6 +6,7 @@
     \item{'process.cnvScore' and 'process.filter' steps added to process().}
     \item{cnvScore() now checks whether the objects were mapped to the same design or not.}
     \item{model.test() now handles NA logRatios.}
+    \item{'l2r.points' added to model.test().}
   }
 }
 \section{Changes in version 1.6.1 (2017-06-12)}{
