@@ -4,7 +4,7 @@
 process.core = function(
 		input,
 		inputName,
-		steps = c("parse", "mask", "replicates", "waca", "export", "spatial", "segment", "fill", "modelize", "export", "fittest", "export", "applyModel", "export"),
+		steps = c("parse", "mask", "replicates", "waca", "export", "spatial", "segment", "fill", "fixLast", "modelize", "export", "fittest", "export", "applyModel", "export"),
 		...
 		)
 	{
@@ -51,6 +51,226 @@ process.core = function(
 
 
 ### PROCESS STEPS ###
+
+process.applyModel <- function(input, ...) {
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	out <- vector(mode="list", length=length(input))
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+		
+		# Apply model
+		out[[i]] <- input[[i]]$model.apply()
+	}
+	
+	if(multiple) { return(out)
+	} else       { return(out[[1]])
+	}
+}
+
+process.cnvScore <- function(input, design, dgv.map, cnvScoreCol="cnvScore", ...) {
+	# Checks
+	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design))     stop("'design' must be an existing file name")
+	if(!is.character(dgv.map) || length(dgv.map) != 1 || is.na(dgv.map) || !file.exists(dgv.map)) stop("'dgv.map' must be an existing file name")
+	if(!grepl("\\.rds$", dgv.map, ignore.case=TRUE)) stop("process.cnvScore() requires 'dgv.map' to be a \".rds\" file")
+	if(!grepl("\\.rdt$", design, ignore.case=TRUE)) stop("process.array() requires 'design' to be a \".rdt\" file")
+	
+	# Import components
+	dgv.map <- readRDS(dgv.map)
+	design <- readRDT(design)
+	
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	# Update 'input' directly
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "track.table")) stop("'input' must be track.table objects (#", i, ")")
+		
+		# Remap segments to current design
+		obj.map <- map2design(input[[i]], design, quiet=TRUE)
+		
+		# Compute CNV score
+		score <- cnvScore(obj.map, dgv.map, expand=TRUE, quiet=TRUE)
+		
+		# Store / Replace in table
+		if(cnvScoreCol %in% input[[i]]$getColNames()) input[[i]]$delColumns(cnvScoreCol)
+		input[[i]]$addColumn(score, cnvScoreCol)
+	}
+	
+	if(multiple) { return(input)
+	} else       { return(input[[1]])
+	}
+}
+
+process.export <- function(input, outDirectory, ...) {
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	# Collect scores
+	stm <- double(length(input))
+	for(i in 1:length(input)) {
+		# Array export
+		if(is(input[[i]], "cghRA.array")) { object <- input[[i]]$probes
+		} else                            { object <- input[[i]]
+		}
+		
+		# Checks
+		if(!is(object, "refTable")) stop("'input' must be refTable inheriting objects (#", i, ")")
+		
+		# Multi-export
+		if(multiple) { suffix <- sprintf("#%i", i)
+		} else       { suffix <- ""
+		}
+		
+		# File name	
+		if(grepl("^cghRA\\.", class(object))) { fileName <- sprintf("%s/%s%s.%s.rdt", outDirectory, object$name, suffix, sub("^cghRA\\.", "", class(object)))
+		} else                                { fileName <- sprintf("%s/%s%s.rdt", outDirectory, object$name, suffix)
+		}
+		
+		# Export
+		saveRDT(object, file=fileName)
+	}
+	
+	if(multiple) { return(input)
+	} else       { return(input[[1]])
+	}
+}
+
+process.fill <- function(input, ...) {
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+	
+		# Process
+		input[[i]]$fillGaps()
+	}
+	
+	if(multiple) { return(input)
+	} else       { return(input[[1]])
+	}
+}
+
+process.filter <- function(input, filter=NULL, ...) {
+	# Checks
+	if(!is.expression(filter)) stop("'filter' must be an R expression")
+	
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	out <- vector(mode="list", length=length(input))
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "refTable")) stop("'input' must be refTable objects (#", i, ")")
+		
+		# Extract
+		out[[i]] <- input[[i]]$extract(filter, asObject=TRUE)
+	}
+	
+	if(multiple) { return(out)
+	} else       { return(out[[1]])
+	}
+}
+
+process.fittest <- function(input, ...) {
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	# Collect scores
+	stm <- double(length(input))
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+		
+		# Extract STM score
+		stm[i] <- input[[i]]$model['stm']
+	}
+	
+	# Return best model
+	best <- which.min(stm)
+	if(length(best) == 1) { out <- input[[ best ]]
+	} else                { stop("No fittest segmentation found")
+	}
+	
+	return(out)
+}
+
+process.fixLast <- function(input, design, ...) {
+	# Checks
+	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design)) stop("'design' must be an existing file name")
+	
+	# Import design
+	design <- readRDT(design)
+	
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+	
+		# Process
+		input[[i]]$fixLast(design)
+	}
+	
+	if(multiple) { return(input)
+	} else       { return(input[[1]])
+	}
+}
+
+process.mask <- function(input, ...) {
+	# Checks
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
+	
+	# Process
+	input$maskByFlag(
+		flags = "^flag_",
+		pattern = TRUE,
+		multiple = "any"
+	)
+	
+	return(input)
+}
+
+process.modelize <- function(input, modelizeArgs=process.default("modelizeArgs"), ...) {
+	# Multiple inputs
+	multiple <- is.list(input)
+	if(!multiple) input <- list(input)
+	
+	out <- vector(mode="list", length=length(input))
+	for(i in 1:length(input)) {
+		# Checks
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+		
+		# Build and check call
+		regions <- input[[i]]
+		modelizeCall <- try(parse(text=sprintf("regions$model.auto(discreet=TRUE, %s)", modelizeArgs)), silent=TRUE)
+		if(is(modelizeCall, "try-error")) stop("Parse error for cghRA.copies parameters (#", i, ")")
+		
+		# Modelization call
+		eval(modelizeCall)
+		regions$modelizeCall <- modelizeCall[[1]]
+		
+		# Store
+		out[[i]] <- regions
+	}
+	
+	if(multiple) { return(out)
+	} else       { return(out[[1]])
+	}
+}
 
 process.parse <- function(input, design, probeParser=Agilent.probes, probeArgs=list(), ...) {
 	# Checks
@@ -110,20 +330,6 @@ process.regions <- function(input, ...) {
 	}
 }
 
-process.mask <- function(input, ...) {
-	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
-	
-	# Process
-	input$maskByFlag(
-		flags = "^flag_",
-		pattern = TRUE,
-		multiple = "any"
-	)
-	
-	return(input)
-}
-
 process.replicates <- function(input, replicateFun=stats::median, ...) {
 	# Checks
 	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
@@ -133,26 +339,6 @@ process.replicates <- function(input, replicateFun=stats::median, ...) {
 		fun = replicateFun,
 		na.rm = TRUE
 	)
-	
-	return(input)
-}
-
-process.waca <- function(input, ...) {
-	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
-	
-	# Process
-	input$WACA()
-	
-	return(input)
-}
-
-process.spatial <- function(input, outDirectory, ...) {
-	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
-	
-	# Process
-	input$spatial(filename=sprintf("%s/%s.spatial.png", outDirectory, input$name))
 	
 	return(input)
 }
@@ -182,185 +368,23 @@ process.segment <- function(input, segmentArgs=process.default("segmentArgs"), .
 	}
 }
 
-process.fill <- function(input, ...) {
-	# Multiple inputs
-	multiple <- is.list(input)
-	if(!multiple) input <- list(input)
-	
-	for(i in 1:length(input)) {
-		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
-	
-		# Process
-		input[[i]]$fillGaps()
-	}
-	
-	if(multiple) { return(input)
-	} else       { return(input[[1]])
-	}
-}
-
-process.modelize <- function(input, modelizeArgs=process.default("modelizeArgs"), ...) {
-	# Multiple inputs
-	multiple <- is.list(input)
-	if(!multiple) input <- list(input)
-	
-	out <- vector(mode="list", length=length(input))
-	for(i in 1:length(input)) {
-		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
-		
-		# Build and check call
-		regions <- input[[i]]
-		modelizeCall <- try(parse(text=sprintf("regions$model.auto(discreet=TRUE, %s)", modelizeArgs)), silent=TRUE)
-		if(is(modelizeCall, "try-error")) stop("Parse error for cghRA.copies parameters (#", i, ")")
-		
-		# Modelization call
-		eval(modelizeCall)
-		regions$modelizeCall <- modelizeCall[[1]]
-		
-		# Store
-		out[[i]] <- regions
-	}
-	
-	if(multiple) { return(out)
-	} else       { return(out[[1]])
-	}
-}
-
-process.applyModel <- function(input, ...) {
-	# Multiple inputs
-	multiple <- is.list(input)
-	if(!multiple) input <- list(input)
-	
-	out <- vector(mode="list", length=length(input))
-	for(i in 1:length(input)) {
-		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
-		
-		# Apply model
-		out[[i]] <- input[[i]]$model.apply()
-	}
-	
-	if(multiple) { return(out)
-	} else       { return(out[[1]])
-	}
-}
-
-process.fittest <- function(input, ...) {
-	# Multiple inputs
-	multiple <- is.list(input)
-	if(!multiple) input <- list(input)
-	
-	# Collect scores
-	stm <- double(length(input))
-	for(i in 1:length(input)) {
-		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
-		
-		# Extract STM score
-		stm[i] <- input[[i]]$model['stm']
-	}
-	
-	# Return best model
-	best <- which.min(stm)
-	if(length(best) == 1) { out <- input[[ best ]]
-	} else                { stop("No fittest segmentation found")
-	}
-	
-	return(out)
-}
-
-process.export <- function(input, outDirectory, ...) {
-	# Multiple inputs
-	multiple <- is.list(input)
-	if(!multiple) input <- list(input)
-	
-	# Collect scores
-	stm <- double(length(input))
-	for(i in 1:length(input)) {
-		# Array export
-		if(is(input[[i]], "cghRA.array")) { object <- input[[i]]$probes
-		} else                            { object <- input[[i]]
-		}
-		
-		# Checks
-		if(!is(object, "refTable")) stop("'input' must be refTable inheriting objects (#", i, ")")
-		
-		# Multi-export
-		if(multiple) { suffix <- sprintf("#%i", i)
-		} else       { suffix <- ""
-		}
-		
-		# File name	
-		if(grepl("^cghRA\\.", class(object))) { fileName <- sprintf("%s/%s%s.%s.rdt", outDirectory, object$name, suffix, sub("^cghRA\\.", "", class(object)))
-		} else                                { fileName <- sprintf("%s/%s%s.rdt", outDirectory, object$name, suffix)
-		}
-		
-		# Export
-		saveRDT(object, file=fileName)
-	}
-	
-	if(multiple) { return(input)
-	} else       { return(input[[1]])
-	}
-}
-
-process.cnvScore <- function(input, design, dgv.map, cnvScoreCol="cnvScore", ...) {
+process.spatial <- function(input, outDirectory, ...) {
 	# Checks
-	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design))     stop("'design' must be an existing file name")
-	if(!is.character(dgv.map) || length(dgv.map) != 1 || is.na(dgv.map) || !file.exists(dgv.map)) stop("'dgv.map' must be an existing file name")
-	if(!grepl("\\.rds$", dgv.map, ignore.case=TRUE)) stop("process.cnvScore() requires 'dgv.map' to be a \".rds\" file")
-	if(!grepl("\\.rdt$", design, ignore.case=TRUE)) stop("process.array() requires 'design' to be a \".rdt\" file")
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
 	
-	# Import components
-	dgv.map <- readRDS(dgv.map)
-	design <- readRDT(design)
+	# Process
+	input$spatial(filename=sprintf("%s/%s.spatial.png", outDirectory, input$name))
 	
-	# Multiple inputs
-	multiple <- is.list(input)
-	if(!multiple) input <- list(input)
-	
-	# Update 'input' directly
-	for(i in 1:length(input)) {
-		# Checks
-		if(!is(input[[i]], "track.table")) stop("'input' must be track.table objects (#", i, ")")
-		
-		# Remap segments to current design
-		obj.map <- map2design(input[[i]], design, quiet=TRUE)
-		
-		# Compute CNV score
-		score <- cnvScore(obj.map, dgv.map, expand=TRUE, quiet=TRUE)
-		
-		# Store / Replace in table
-		if(cnvScoreCol %in% input[[i]]$getColNames()) input[[i]]$delColumns(cnvScoreCol)
-		input[[i]]$addColumn(score, cnvScoreCol)
-	}
-	
-	if(multiple) { return(input)
-	} else       { return(input[[1]])
-	}
+	return(input)
 }
 
-process.filter <- function(input, filter=NULL, ...) {
+process.waca <- function(input, ...) {
 	# Checks
-	if(!is.expression(filter)) stop("'filter' must be an R expression")
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
 	
-	# Multiple inputs
-	multiple <- is.list(input)
-	if(!multiple) input <- list(input)
+	# Process
+	input$WACA()
 	
-	out <- vector(mode="list", length=length(input))
-	for(i in 1:length(input)) {
-		# Checks
-		if(!is(input[[i]], "refTable")) stop("'input' must be refTable objects (#", i, ")")
-		
-		# Extract
-		out[[i]] <- input[[i]]$extract(filter, asObject=TRUE)
-	}
-	
-	if(multiple) { return(out)
-	} else       { return(out[[1]])
-	}
+	return(input)
 }
 

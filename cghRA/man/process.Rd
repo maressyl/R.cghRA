@@ -1,24 +1,25 @@
 \name{process}
 \alias{tk.process}
 \alias{process}
-\alias{process.log}
+\alias{process.applyModel}
+\alias{process.cnvScore}
 \alias{process.core}
+\alias{process.default}
+\alias{process.export}
+\alias{process.fill}
+\alias{process.filter}
+\alias{process.fittest}
+\alias{process.fixLast}
+\alias{process.log}
+\alias{process.mask}
+\alias{process.modelize}
 \alias{process.parse}
 \alias{process.probes}
 \alias{process.regions}
-\alias{process.mask}
 \alias{process.replicates}
-\alias{process.waca}
-\alias{process.spatial}
 \alias{process.segment}
-\alias{process.fill}
-\alias{process.modelize}
-\alias{process.applyModel}
-\alias{process.fittest}
-\alias{process.export}
-\alias{process.cnvScore}
-\alias{process.filter}
-\alias{process.default}
+\alias{process.spatial}
+\alias{process.waca}
 \title{
   cghRA array processing
 }
@@ -39,23 +40,26 @@
   process(inputs, logFile = "process.log", cluster = NA, ...)
   process.log(..., logFile)
   process.core(input, inputName, steps = c("parse", "mask", "replicates", "waca",
-    "export", "spatial", "segment", "fill", "modelize", "export", "fittest", "export",
-    "applyModel", "export"), ...)
+    "export", "spatial", "segment", "fill", "fixLast", "modelize", "export", "fittest",
+    "export", "applyModel", "export"), ...)
+  
+  process.applyModel(input, ...)
+  process.cnvScore(input, design, dgv.map, cnvScoreCol = "cnvScore", ...)
+  process.export(input, outDirectory, ...)
+  process.fill(input, ...)
+  process.filter(input, filter = NULL, ...)
+  process.fittest(input, ...)
+  process.fixLast(input, design, ...)
+  process.mask(input, ...)
+  process.modelize(input, modelizeArgs = process.default("modelizeArgs"), ...)
   process.parse(input, design, probeParser = Agilent.probes, probeArgs = list(), ...)
   process.probes(input, design, ...)
   process.regions(input, ...)
-  process.mask(input, ...)
   process.replicates(input, replicateFun = stats::median, ...)
-  process.waca(input, ...)
-  process.spatial(input, outDirectory, ...)
   process.segment(input, segmentArgs = process.default("segmentArgs"), ...)
-  process.fill(input, ...)
-  process.modelize(input, modelizeArgs = process.default("modelizeArgs"), ...)
-  process.applyModel(input, ...)
-  process.fittest(input, ...)
-  process.export(input, outDirectory, ...)
-  process.cnvScore(input, design, dgv.map, cnvScoreCol = "cnvScore", ...)
-  process.filter(input, filter = NULL, ...)
+  process.spatial(input, outDirectory, ...)
+  process.waca(input, ...)
+  
   tk.process(globalTopLevel, localTopLevel)
   process.default(argName, profileName)
 }
