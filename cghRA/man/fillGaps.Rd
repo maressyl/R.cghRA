@@ -11,7 +11,7 @@
 }
 
 \usage{
-  fillGaps(segTable, isOrdered = FALSE)
+  fillGaps(segTable, isOrdered = FALSE, gap = 1L)
 }
 
 \arguments{
@@ -20,6 +20,9 @@
 }
   \item{isOrdered}{
     Single logical value, whether \code{segTable} is already ordered by chromosome and starting position or not.
+}
+  \item{gap}{
+    Single integer value, the new gap size to enforce (in base pairs). This value is basically subtracted from the start of the next segment.
 }
 }
 

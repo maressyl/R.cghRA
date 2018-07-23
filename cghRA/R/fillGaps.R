@@ -3,7 +3,8 @@
 
 fillGaps = function(
 		segTable,
-		isOrdered = FALSE
+		isOrdered = FALSE,
+		gap = 1L
 		)
 	{
 	# Arg checks
@@ -32,7 +33,7 @@ fillGaps = function(
 	stops = setdiff(1:nrow(segTable), breaks)
 	
 	# New end : the following start
-	if (length(starts) > 0) segTable[ stops , "end" ] = segTable[ starts , "start" ]
+	if (length(starts) > 0) segTable[ stops , "end" ] = segTable[ starts , "start" ] - gap
 	
 	return(segTable)
 }

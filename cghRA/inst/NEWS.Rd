@@ -1,5 +1,10 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
+\section{Changes in version 1.6.3 (2018-07-23)}{
+  \itemize{
+    \item{'fill' step in process() now enforces a 1-bp gap to remove ambiguity.}
+  }
+}
 \section{Changes in version 1.6.2 (2018-07-12)}{
   \itemize{
     \item{localize() no longer skips the first result row.}
