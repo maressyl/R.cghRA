@@ -59,6 +59,10 @@
     \item{\code{fillGaps(...)}:}{
       Apply the fillGaps() function to extend regions in order to fill inter-segment gaps.
     }
+    \item{\code{fixLast(...)}:}{
+      Fix the end of the last segment of each chromosome to reach the end of its last probe rather than its start (fix for DNAcopy segmentation).\cr
+      - \strong{design}   : the cghRA.design object which was used for the segmentation.
+    }
     \item{\code{karyotype(bandTrack, value = , thresholds = , precision = )}:}{
       Returns a karyotype formula of altered regions.\cr
       - \strong{bandTrack}    : a track.table object, as returned by track.UCSC_bands().\cr

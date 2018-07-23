@@ -101,6 +101,23 @@ fillGaps = function(...) {
 	.self$check()
 },
 
+fixLast = function(design) {
+"Fix the end of the last segment of each chromosome to reach the end of its last probe rather than its start (fix for DNAcopy segmentation).
+- design   : the cghRA.design object which was used for the segmentation."
+	
+	# Indexes of last segments of each chromosome
+	lastSegs <- which(c(head(.self$extract(,"chrom"), -1) != tail(.self$extract(,"chrom"), -1), TRUE))
+	
+	for(lastSeg in lastSegs) {
+		# Get the end of the last segment probe
+		probeEnd <- design$slice(chrom=.self$extract(lastSeg,"chrom"), start=.self$extract(lastSeg,"end"), end=.self$extract(lastSeg,"end"))$end
+		if(length(probeEnd) != 1L) stop("None or multiple probes match the end of segment #", lastSeg)
+		
+		# Update the segment end
+		.self$fill(lastSeg, "end", probeEnd)
+	}
+},
+
 initialize = function(model=NA_real_, segmentCall=new("call"), modelizeCall=new("call"), ...) {
 	callSuper(...)
 	initFields(model=model, segmentCall=segmentCall, modelizeCall=modelizeCall)

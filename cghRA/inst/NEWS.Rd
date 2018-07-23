@@ -2,6 +2,7 @@
 \title{cghRA package NEWS}
 \section{Changes in version 1.6.3 (2018-07-23)}{
   \itemize{
+    \item{cghRA.regions$fixLast() added to fix DNAcopy's approximation of 1 bp probes.}
     \item{'fill' step in process() now enforces a 1-bp gap to remove ambiguity.}
   }
 }
