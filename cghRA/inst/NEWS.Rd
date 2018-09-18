@@ -1,10 +1,11 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.6.3 (2018-07-23)}{
+\section{Changes in version 1.6.3 (2018-09-18)}{
   \itemize{
     \item{cghRA.regions$fixLast() added to fix DNAcopy's approximation of 1 bp probes.}
     \item{'fixLast' step added as a default in process().}
     \item{'fill' step in process() now enforces a 1-bp gap to remove ambiguity.}
+    \item{'colorVal' / 'colorFun' replaced by 'fillColor' to match Rgb update.}
   }
 }
 \section{Changes in version 1.6.2 (2018-07-12)}{

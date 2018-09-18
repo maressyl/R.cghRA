@@ -39,8 +39,7 @@ defaultParams = function(...) {
 	params$origin <- 0
 	params$ylim <- c(-3, 3)
 	params$yaxt <- "s"
-	params$colorVal <- NA
-	params$colorFun <- function() {
+	params$fillColor <- function() {
 		output = rep(as.character(NA), nrow(slice))
 		output[ slice[[column]] == origin ] = "#888888"
 		output[ slice[[column]] > origin ] = "#8888FF"

@@ -126,10 +126,9 @@ LRA = function(value = "logRatio", tracks = TRUE, ...) {
 			lraTracks[[ state ]]$setParam("drawFun", "draw.steps")
 			lraTracks[[ state ]]$setParam("startColumns", c("extended.start", "start", "overlap.start"))
 			lraTracks[[ state ]]$setParam("endColumns", c("extended.end", "end", "overlap.end"))
-			lraTracks[[ state ]]$setParam("colorVal", NA)
 			lraTracks[[ state ]]$setParam("border", "#000000")
 			lraTracks[[ state ]]$setParam(
-				"colorFun",
+				"fillColor",
 				function() {
 					grey(1 - slice$value)
 				}
@@ -230,16 +229,16 @@ penetrance = function(tracks = TRUE, ...) {
 			# Drawing parameters
 			peneTracks[[ state ]]$setParam("drawFun", "draw.hist")
 			if(state == "gain")     {
-				peneTracks[[ state ]]$setParam("colorVal", "#8888FF")
-				peneTracks[[ state ]]$setParam("border", "#8888FF")
+				peneTracks[[ state ]]$setParam("fillColor", "#8888FF")
+				peneTracks[[ state ]]$setParam("border", "fillColor")
 			}
 			if(state == "deletion") {
-				peneTracks[[ state ]]$setParam("colorVal", "#FF8888")
-				peneTracks[[ state ]]$setParam("border", "#FF8888")
+				peneTracks[[ state ]]$setParam("fillColor", "#FF8888")
+				peneTracks[[ state ]]$setParam("border", "fillColor")
 			}
 			if(state == "loss") {
-				peneTracks[[ state ]]$setParam("colorVal", "#880000")
-				peneTracks[[ state ]]$setParam("border", "#880000")
+				peneTracks[[ state ]]$setParam("fillColor", "#880000")
+				peneTracks[[ state ]]$setParam("border", "fillColor")
 			}
 		}
 		
@@ -403,10 +402,9 @@ SRA = function(value = "logRatio", tracks = TRUE, ...) {
 			sraTracks[[ state ]]$setParam("drawFun", "draw.steps")
 			sraTracks[[ state ]]$setParam("startColumns", c("extended.start", "start", "overlap.start"))
 			sraTracks[[ state ]]$setParam("endColumns", c("extended.end", "end", "overlap.end"))
-			sraTracks[[ state ]]$setParam("colorVal", NA)
 			sraTracks[[ state ]]$setParam("border", "#000000")
 			sraTracks[[ state ]]$setParam(
-				"colorFun",
+				"fillColor",
 				function() {
 					grey(1 - slice$value)
 				}
@@ -467,10 +465,9 @@ STEPS = function(tracks = TRUE, ...) {
 			stepsTracks[[ state ]]$setParam("drawFun", "draw.steps")
 			stepsTracks[[ state ]]$setParam("startColumns", c("start.baseline", "start.MCR"))
 			stepsTracks[[ state ]]$setParam("endColumns", c("end.baseline", "end.MCR"))
-			stepsTracks[[ state ]]$setParam("colorVal", NA)
 			stepsTracks[[ state ]]$setParam("border", "#000000")
 			stepsTracks[[ state ]]$setParam(
-				"colorFun",
+				"fillColor",
 				function() {
 					grey(pmax(1 - slice$score/10, 0))
 				}

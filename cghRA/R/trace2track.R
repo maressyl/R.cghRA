@@ -46,7 +46,7 @@ trace2track <- function(paths, dgv.map, dgv.track) {
 	track$setParam("border", "#000000")
 	track$setParam("label", TRUE)
 	track$setParam("labelAdj", "center")
-	track$setParam("colorFun",
+	track$setParam("fillColor",
 		function(){
 		    output <- rep("#88888899", nrow(slice))
 		    output[slice$type %in% c("Duplication", "Gain", "Insertion")] <- "#8888FF99"
