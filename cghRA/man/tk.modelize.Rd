@@ -10,8 +10,8 @@
 
 \usage{
   tk.modelize(compress = "gzip", compression_level = 9, exclude = c("X", "Y", "Xp", "Xq",
-    "Yp", "Yq"), globalTopLevel, localTopLevel, render = c("auto", "png", "tkrplot"),
-    tkrplot.scale = 1, png.res = 100, png.file = tempfile(fileext=".png"))
+    "Yp", "Yq"), globalTopLevel, localTopLevel, png.res = 100,
+    png.file = tempfile(fileext=".png"))
 }
 
 \arguments{
@@ -30,17 +30,11 @@
   \item{localTopLevel}{
     This argument should be filled only when embedding this Tcl-Tk interface in an other. It is the local top level to use to build this interface, generally a \code{\link{tkframe}} or \code{\link{ttkframe}}.
 }
-  \item{render}{
-    Single character value from the ones listed, defining the rendering engine for the plot. "png" is recommended and the default on any platform supporting it (needs Tcl-tk version 8.6 or higher, already available on Linux and MacOS and on Windows with R version 3.4.0 or above), and consists in displaying an export to a PNG file. "tkrplot" is more limited and kept only for backward compatibility, it relies on the external package \code{tkrplot} and the Windows "metafile" format. "auto" (the dzfault) will select the best engine considering to the capabilities of your installation.
-}
-  \item{tkrplot.scale}{
-    Single numeric value, defining a multiplying factor for plot size with the "tkrplot" engine. This argument is mainly provided to temper a bug with the "Font size multiplication factor" feature of last Windows operating system, and get plots filling the whole Tcl-tk window. As an example if you use a 150% factor for fonts and icons in Windows, you should define this argument to 1.5. This has no effect with the "png" engine used on other platforms.
-}
   \item{png.res}{
-    Single integer value, the resolution of the plot in Pixels Per Inches. Passed to \code{\link{png}}, see the corresponding manual for further details. This has no effect with the "tkrplot" engine used on Windows prior to R version 3.4.0.
+    Single integer value, the resolution of the plot in Pixels Per Inches. Passed to \code{\link{png}}, see the corresponding manual for further details.
 }
   \item{png.file}{
-    Single character value, the path to the PNG file that is displayed in the main window. The default behavior is to hide it in a temporary location, however you can define this argument to have an easier access to the images displayed in Rgb (the image will be replaced each time Rgb refresh its display). This has no effect with the "tkrplot" engine used on Windows prior to R version 3.4.0.
+    Single character value, the path to the PNG file that is displayed in the main window. The default behavior is to hide it in a temporary location, however you can define this argument to have an easier access to the images displayed in Rgb (the image will be replaced each time Rgb refresh its display).
 }
 }
 

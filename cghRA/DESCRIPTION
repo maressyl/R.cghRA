@@ -1,8 +1,8 @@
 Package: cghRA
 Type: Package
 Title: Array CGH Data Analysis and Visualization
-Version: 1.6.3
-Date: 2018-09-18
+Version: 1.7.0
+Date: 2018-09-24
 Author: Sylvain Mareschal
 Maintainer: Sylvain Mareschal <maressyl@gmail.com>
 URL: http://www.ovsa.fr/cghRA
@@ -11,4 +11,4 @@ Description: Provides functions to import data from Agilent CGH arrays and proce
 License: GPL (>= 3)
 Depends: methods, Rgb (>= 1.5.0), R (>= 2.10)
 Imports: DNAcopy, utils, stats
-Suggests: tcltk, tkrplot, parallel, GLAD, graphics, grDevices
+Suggests: tcltk, parallel, GLAD, graphics, grDevices

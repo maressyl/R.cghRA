@@ -7,34 +7,13 @@ tk.modelize = function(
 		exclude = c("X", "Y", "Xp", "Xq", "Yp", "Yq"),
 		globalTopLevel,
 		localTopLevel,
-		render = c("auto", "png", "tkrplot"),
-		tkrplot.scale = 1,
 		png.res = 100,
 		png.file = tempfile(fileext=".png")
 		)
 	{
-	# Check renderer
-	render <- match.arg(render)
+	# Check Tcl-tk
 	tcltkVer <- as.double(sub("^([0-9]+\\.[0-9]+).+$", "\\1", tcltk::tclVersion()))
-	if(tcltkVer >= 8.6) {
-		# PNG is not compatible
-		if(render == "auto") render <- "png"
-	} else {
-		# PNG is compatible
-		if(render == "auto")       { render <- "tkrplot"
-		} else if(render == "png") { stop("PNG rendering requires tcltk 8.6 or above")
-		}
-	}
-	
-	# Check if tkrplot is installed
-	if(length(find.package("tkrplot", quiet=TRUE)) == 0L) {
-		tcltk::tkmessageBox(
-			icon = "info",
-			type = "ok",
-			title = "tkrplot package missing",
-			message = "The optional 'tkrplot' package is required to use tk.browse(), please install it and try again."
-		)
-	}
+	if(tcltkVer < 8.6) stop("tk.modelize() requires Tcl-tk >= 8.6 (shipped with R version 3.4.0 and above on Windows")
 	
 	# Current file
 	arrayFiles <- character(0)
@@ -312,7 +291,7 @@ tk.modelize = function(
 		graphics::text(x=0.5, y=0.5, labels="Welcome to cghRA !\n\nClick \"Select files\" and select *.regions.rdt files to begin.")
 	}
 	
-	# Replot using 'png' rendered
+	# Replot using 'png' renderer
 	plot.png <- function(empty) {
 		# Produce image file
 		grDevices::png(png.file, width=width, height=height, res=png.res)
@@ -326,49 +305,14 @@ tk.modelize = function(
 		tcltk::tkconfigure(plotWidget, width=width, height=height)
 	}
 	
-	# Replot using 'tkrplot' rendered
-	plot.tkrplot <- function(empty) {
-		tkrplot::tkrreplot(
-			lab = plotWidget,
-			fun = if(isTRUE(empty)) { plot.empty } else { plot.core },
-			hscale = hscale * tkrplot.scale,
-			vscale = vscale * tkrplot.scale
-		)
-	}
-	
-	# Correct tkrplot scale factor
-	changeScale <- function() {
-		tkrplot.scale <<- tk.value(
-			parent = NULL,
-			type = "double",
-			title = "Expansion factor (1 = 100%)",
-			default = tkrplot.scale,
-			allowEmpty = FALSE
-		)
-		replot()
-	}
-	
-	# Pixel / tkrplot "scale" unit conversion factor
-	scaleFactor <- NA
-	
 	# Replot common workflow
 	replot <- function(empty=FALSE) {
 		# Check coordinates
 		if(!isTRUE(empty)) empty <- index == 0L
 		
-		# Guess scale factor from 2 x 1 empty plot (1 scale unit = x un-resized pixels)
-		if(render == "tkrplot" && is.na(scaleFactor)) {
-			scaleFactor <<- as.integer(tcltk::tclvalue(tcltk::tkwinfo("width", plotWidget))) / 2
-			if(scaleFactor < 100) stop("Scale factor detection seems to have failed (", scaleFactor, ")")
-		}
-		
 		# Adjust size
 		height <<- autoHeight()
 		width <<- autoWidth()
-		if(render == "tkrplot") {
-			vscale <<- height / scaleFactor
-			hscale <<- width / scaleFactor
-		}
 		
 		# Grab focus to avoid keyboard shortcuts quirks
 		tcltk::tkfocus(plotWidget)
@@ -376,9 +320,7 @@ tk.modelize = function(
 		# Replot
 		handle(
 			expr = {
-				if(render == "png")            { plot.png(empty=empty)
-				} else if(render == "tkrplot") { plot.tkrplot(empty=empty)
-				}
+				plot.png(empty=empty)
 			},
 			# Silently ignore message()
 			messageHandler = NULL,
@@ -404,13 +346,6 @@ tk.modelize = function(
 			}					
 		)
 		
-		# Adjust for Windows's magnifying factor
-		if(render == "tkrplot" && tkrplot.scale > 1) {
-			tcltk::tcl("update", "idletasks")
-			tcltk::tkconfigure(plotWidget, width=width - 10L)
-			tcltk::tkconfigure(plotWidget, height=height)
-		}
-	
 		# Model was updated
 		enableUpdate()
 	}
@@ -691,17 +626,10 @@ tk.modelize = function(
 			height <- 300L
 			width <- autoWidth()
 			
-			if(render == "png") {
-				# Display (empty) PNG image
-				plotImage <- tcltk::tkimage.create("photo", width=width, height=height)
-				plotWidget <- tcltk::tkcanvas(plotFrame, width=width, height=height)
-				tcltk::tkcreate(plotWidget, "image", 0, 0, anchor="nw", image=plotImage)
-			} else if(render == "tkrplot") {
-				# tkrplot widget (fixed size image to guess scaleFactor)
-				hscale <- 2
-				vscale <- 0.6
-				plotWidget <- tkrplot::tkrplot(parent=plotFrame, fun=plot.empty, hscale=hscale, vscale=vscale)
-			}
+			# Display (empty) PNG image
+			plotImage <- tcltk::tkimage.create("photo", width=width, height=height)
+			plotWidget <- tcltk::tkcanvas(plotFrame, width=width, height=height)
+			tcltk::tkcreate(plotWidget, "image", 0, 0, anchor="nw", image=plotImage)
 			
 			tcltk::tkgrid(plotWidget, column=1, row=1, padx=5, pady=5)
 			
@@ -848,10 +776,6 @@ tk.modelize = function(
 		fileFrame <- tcltk::ttklabelframe(parent=localTopLevel, relief="groove", borderwidth=2, text="Actions")
 		tcltk::tkgrid.columnconfigure(fileFrame, 2, weight=1)
 		tcltk::tkgrid.columnconfigure(fileFrame, 6, weight=1)
-			
-			# Resize button
-			resizeButton <- tcltk::tkbutton(parent=fileFrame, text="Adjust plot size", command=changeScale)
-			tcltk::tkgrid(resizeButton, column=1, row=1, padx=5, pady=5)
 			
 			# Previous file
 			previousFileButton <- tcltk::tkbutton(parent=fileFrame, text="Previous", command=previousFile)

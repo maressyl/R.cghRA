@@ -1,5 +1,10 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
+\section{Changes in version 1.7.0 (2018-09-24)}{
+  \itemize{
+    \item{'tkrplot' rendering no longer supported in tk.modelize().}
+  }
+}
 \section{Changes in version 1.6.3 (2018-09-18)}{
   \itemize{
     \item{cghRA.regions$fixLast() added to fix DNAcopy's approximation of 1 bp probes.}
