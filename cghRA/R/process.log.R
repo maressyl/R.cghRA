@@ -18,7 +18,7 @@ process.log = function(
 		# Catch error, warnings and messages
 		handle(
 			expr = {
-				process.core(...)
+				out <- process.core(...)
 			},
 			messageHandler = function(m) {
 				logLine <<- sprintf("%s%s", logLine, conditionMessage(m))
@@ -35,8 +35,8 @@ process.log = function(
 		cat(logLine, file=logFile, append=TRUE)
 	} else {
 		# No logging
-		process.core(...)
+		out <- process.core(...)
 	}
 	
-	invisible(TRUE)
+	invisible(out)
 }

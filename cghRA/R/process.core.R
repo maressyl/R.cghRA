@@ -4,6 +4,7 @@
 process.core = function(
 		input,
 		inputName,
+		output,
 		steps = c("parse", "mask", "replicates", "waca", "export", "spatial", "segment", "fill", "fixLast", "modelize", "export", "fittest", "export", "applyModel", "export"),
 		...
 		)
@@ -35,6 +36,10 @@ process.core = function(
 		args$input <- do.call(what=fun, args=args)
 	}
 	
+	# Output of the last step
+	if(isTRUE(output)) { out <- args$input
+	} else             { out <- TRUE
+	}
 	
 	# Cleaning
 	message("clean, ", appendLF=FALSE)
@@ -46,6 +51,8 @@ process.core = function(
 	T1 <- proc.time()['elapsed']
 	d <- as.integer(T1 - T0);
 	message(sprintf("done (%02i:%02i:%02i)\n", d %/% 3600, d %% 3600 %/% 60, d %% 60))
+	
+	invisible(out)
 }
 
 

@@ -37,9 +37,9 @@
 }
 
 \usage{
-  process(inputs, logFile = "process.log", cluster = NA, ...)
+  process(inputs, logFile = "process.log", cluster = NA, output = FALSE, ...)
   process.log(..., logFile)
-  process.core(input, inputName, steps = c("parse", "mask", "replicates", "waca",
+  process.core(input, inputName, output, steps = c("parse", "mask", "replicates", "waca",
     "export", "spatial", "segment", "fill", "fixLast", "modelize", "export", "fittest",
     "export", "applyModel", "export"), ...)
   
@@ -73,6 +73,9 @@
 }
   \item{cluster}{
     Arguments to be passed to \code{\link{makeCluster}} as a list, for parallel processing (requires the optionnal \code{parallel} package). Remote machines are not handled properly in the current version of \code{process}, you should limit to "spec" defining how many processors can be used on the local machine as an integer value. The \code{FALSE} value requires an unparallelized mode, slower but more suitable for error tracking. The \code{NA} default value tries to detect the CPU count on the local machine if \code{parallel} is installed, else switches to unparallelized mode.
+}
+  \item{output}{
+    Single logical value, whether to return the output of the last step or not (see the \code{Value} section)).
 }
   \item{\dots}{
     Further arguments to be passed to \code{process} sub-functions, depending on the \code{steps} choosen (see below). The default workflow expects at least \code{design} and \code{outDirectory} to be provided.
@@ -156,7 +159,9 @@
 }
 
 \value{
-  Only \code{process.default} returns something : if \code{argName} is provided it returns the default value for the queried argument, else a list of profiles available for each handled argument. When many profiles are handled, the first value in the list is the default one (returned when \code{profileName} is missing).
+  \code{process.default} : if \code{argName} is provided it returns the default value for the queried argument, else a list of profiles available for each handled argument. When many profiles are handled, the first value in the list is the default one (returned when \code{profileName} is missing).
+  
+  \code{process} : if \code{output} is \code{TRUE}, the function invisibly returns the output of the last step of the pipeline (in most cases a list with one element or a sub-list for each sample). If \code{output} is \code{FALSE}, the function invisibly returns \code{inputs} untouched.
 }
 
 \author{

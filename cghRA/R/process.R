@@ -5,6 +5,7 @@ process = function(
 		inputs,
 		logFile = "process.log",
 		cluster = NA,
+		output = FALSE,
 		...
 		)
 	{
@@ -60,23 +61,29 @@ process = function(
 	if(identical(cluster, FALSE)) {
 		# Linear local processing
 		for(i in 1:length(inputs)) {
-			process.log(
+			# Process
+			out <- process.log(
 				input = inputs[[i]],
 				inputName = inputNames[i],
+				output = output,
 				logFile = logFile,
 				...
 			)
+			
+			# Store output
+			if(isTRUE(output)) inputs[[i]] <- out
 		}
 	} else {
 		# Cluster processing
 		cluster <- do.call(what=parallel::makeCluster, args=cluster)
 		on.exit(parallel::stopCluster(cluster), add=TRUE)
-		parallel::clusterMap(
+		out <- parallel::clusterMap(
 			cl = cluster,
 			fun = process.log,
 			input = inputs,
 			inputName = inputNames,
 			MoreArgs = list(
+				output = output,
 				logFile = logFile,
 				...
 			),
@@ -85,11 +92,14 @@ process = function(
 			USE.NAMES = FALSE,
 			.scheduling = "dynamic"
 		)
+		
+		# Store output
+		if(isTRUE(output)) inputs <- out
 	}
 	
 	# Finalize
 	lastMessage <- format(Sys.time(), "[%H:%M:%S] All done\n")
 	cat(lastMessage, file=logFile, append=TRUE)
 	
-	invisible(TRUE)
+	invisible(inputs)
 }

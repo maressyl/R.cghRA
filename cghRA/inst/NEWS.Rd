@@ -1,8 +1,9 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.7.0 (2018-09-24)}{
+\section{Changes in version 1.7.0 (2018-10-02)}{
   \itemize{
     \item{'tkrplot' rendering no longer supported in tk.modelize().}
+    \item{'output' argument added to process() and process.core().}
   }
 }
 \section{Changes in version 1.6.3 (2018-09-18)}{
