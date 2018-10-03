@@ -12,13 +12,14 @@ process.log = function(
 	if(!is.na(logFile) && file.exists(logFile)) {
 		# Initialize
 		logLine <- ""
+		out <- NULL
 		opt <- options(warn=1)
 		on.exit(options(opt))
 	
 		# Catch error, warnings and messages
 		handle(
 			expr = {
-				out <- process.core(...)
+				out <<- process.core(...)
 			},
 			messageHandler = function(m) {
 				logLine <<- sprintf("%s%s", logLine, conditionMessage(m))
