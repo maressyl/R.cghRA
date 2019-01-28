@@ -82,8 +82,8 @@ process.cnvScore <- function(input, design, dgv.map, cnvScoreCol="cnvScore", ...
 	# Checks
 	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design))     stop("'design' must be an existing file name")
 	if(!is.character(dgv.map) || length(dgv.map) != 1 || is.na(dgv.map) || !file.exists(dgv.map)) stop("'dgv.map' must be an existing file name")
-	if(!grepl("\\.rds$", dgv.map, ignore.case=TRUE)) stop("process.cnvScore() requires 'dgv.map' to be a \".rds\" file")
-	if(!grepl("\\.rdt$", design, ignore.case=TRUE)) stop("process.array() requires 'design' to be a \".rdt\" file")
+	if(!grepl("\\.rdt$", design, ignore.case=TRUE))                                               stop("'design' must be a \".rdt\" file")
+	if(!grepl("\\.rds$", dgv.map, ignore.case=TRUE))                                              stop("'dgv.map' must be a \".rds\" file")
 	
 	# Import components
 	dgv.map <- readRDS(dgv.map)
@@ -96,7 +96,7 @@ process.cnvScore <- function(input, design, dgv.map, cnvScoreCol="cnvScore", ...
 	# Update 'input' directly
 	for(i in 1:length(input)) {
 		# Checks
-		if(!is(input[[i]], "track.table")) stop("'input' must be track.table objects (#", i, ")")
+		if(!is(input[[i]], "track.table")) stop("'input' must consist of track.table inheriting objects (#", i, ")")
 		
 		# Remap segments to current design
 		obj.map <- map2design(input[[i]], design, quiet=TRUE)
@@ -128,7 +128,7 @@ process.export <- function(input, outDirectory, ...) {
 		}
 		
 		# Checks
-		if(!is(object, "refTable")) stop("'input' must be refTable inheriting objects (#", i, ")")
+		if(!is(object, "refTable")) stop("'input' must consist of refTable inheriting objects (#", i, ")")
 		
 		# Multi-export
 		if(multiple) { suffix <- sprintf("#%i", i)
@@ -156,7 +156,7 @@ process.fill <- function(input, ...) {
 	
 	for(i in 1:length(input)) {
 		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must consist of cghRA.regions inheriting objects (#", i, ")")
 	
 		# Process
 		input[[i]]$fillGaps()
@@ -178,7 +178,7 @@ process.filter <- function(input, filter=NULL, ...) {
 	out <- vector(mode="list", length=length(input))
 	for(i in 1:length(input)) {
 		# Checks
-		if(!is(input[[i]], "refTable")) stop("'input' must be refTable objects (#", i, ")")
+		if(!is(input[[i]], "refTable")) stop("'input' must consist of refTable inheriting objects (#", i, ")")
 		
 		# Extract
 		out[[i]] <- input[[i]]$extract(filter, asObject=TRUE)
@@ -198,7 +198,7 @@ process.fittest <- function(input, ...) {
 	stm <- double(length(input))
 	for(i in 1:length(input)) {
 		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must consist of cghRA.regions inheriting objects (#", i, ")")
 		
 		# Extract STM score
 		stm[i] <- input[[i]]$model['stm']
@@ -216,6 +216,7 @@ process.fittest <- function(input, ...) {
 process.fixLast <- function(input, design, ...) {
 	# Checks
 	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design)) stop("'design' must be an existing file name")
+	if(!grepl("\\.rdt$", design, ignore.case=TRUE))                                           stop("'design' must be a \".rdt\" file")
 	
 	# Import design
 	design <- readRDT(design)
@@ -226,7 +227,7 @@ process.fixLast <- function(input, design, ...) {
 	
 	for(i in 1:length(input)) {
 		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must consist of cghRA.regions inheriting objects (#", i, ")")
 	
 		# Process
 		input[[i]]$fixLast(design)
@@ -239,7 +240,7 @@ process.fixLast <- function(input, design, ...) {
 
 process.mask <- function(input, ...) {
 	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array inheriting object")
 	
 	# Process
 	input$maskByFlag(
@@ -259,12 +260,12 @@ process.modelize <- function(input, modelizeArgs=process.default("modelizeArgs")
 	out <- vector(mode="list", length=length(input))
 	for(i in 1:length(input)) {
 		# Checks
-		if(!is(input[[i]], "cghRA.regions")) stop("'input' must be cghRA.regions objects (#", i, ")")
+		if(!is(input[[i]], "cghRA.regions")) stop("'input' must consist of cghRA.regions inheriting objects (#", i, ")")
 		
 		# Build and check call
 		regions <- input[[i]]
 		modelizeCall <- try(parse(text=sprintf("regions$model.auto(discreet=TRUE, %s)", modelizeArgs)), silent=TRUE)
-		if(is(modelizeCall, "try-error")) stop("Parse error for cghRA.copies parameters (#", i, ")")
+		if(is(modelizeCall, "try-error")) stop("Parse error in cghRA.copies parameters (#", i, ")")
 		
 		# Modelization call
 		eval(modelizeCall)
@@ -281,9 +282,10 @@ process.modelize <- function(input, modelizeArgs=process.default("modelizeArgs")
 
 process.parse <- function(input, design, probeParser=Agilent.probes, probeArgs=list(), ...) {
 	# Checks
-	if(!is.character(input) || length(input) != 1 || is.na(input) || !file.exists(input)) stop("'input' must be an existing file name")
+	if(!is.character(input) || length(input) != 1 || is.na(input) || !file.exists(input))     stop("'input' must be an existing file name")
 	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design)) stop("'design' must be an existing file name")
-	if(!grepl("\\.rdt$", design, ignore.case=TRUE)) stop("process.array() requires 'design' to be a \".rdt\" file")
+	if(!grepl("\\.rdt$", input, ignore.case=TRUE))                                            stop("'input' must be a \".rdt\" file")
+	if(!grepl("\\.rdt$", design, ignore.case=TRUE))                                           stop("'design' must be a \".rdt\" file")
 	
 	# Parse
 	probeArgs$file <- input
@@ -304,10 +306,10 @@ process.parse <- function(input, design, probeParser=Agilent.probes, probeArgs=l
 
 process.probes <- function(input, design, ...) {
 	# Checks
-	if(!is.character(input) || length(input) != 1 || is.na(input) || !file.exists(input)) stop("'input' must be an existing file name")
+	if(!is.character(input) || length(input) != 1 || is.na(input) || !file.exists(input))     stop("'input' must be an existing file name")
 	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design)) stop("'design' must be an existing file name")
-	if(!grepl("\\.rdt$", input, ignore.case=TRUE)) stop("process.array() requires 'input' to be a \".rdt\" file")
-	if(!grepl("\\.rdt$", design, ignore.case=TRUE)) stop("process.array() requires 'design' to be a \".rdt\" file")
+	if(!grepl("\\.rdt$", input, ignore.case=TRUE))                                            stop("'input' must be a \".rdt\" file")
+	if(!grepl("\\.rdt$", design, ignore.case=TRUE))                                           stop("'design' must be a \".rdt\" file")
 	
 	# Import components
 	probes <- readRDT(input)
@@ -326,7 +328,7 @@ process.probes <- function(input, design, ...) {
 process.regions <- function(input, ...) {
 	# Checks
 	if(!is.character(input) || any(is.na(input)) || any(!file.exists(input))) stop("'input' must be one or many existing file name(s)")
-	if(any(!grepl("\\.rdt$", input, ignore.case=TRUE))) stop("process.regions() requires \".rdt\" files")
+	if(any(!grepl("\\.rdt$", input, ignore.case=TRUE)))                       stop("'input' must be one or many \".rdt\" file(s)")
 	
 	# Import probe file
 	out <- vector(mode="list", length=length(input))
@@ -339,7 +341,7 @@ process.regions <- function(input, ...) {
 
 process.replicates <- function(input, replicateFun=stats::median, ...) {
 	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array inheriting object")
 	
 	# Process
 	input$replicates(
@@ -352,7 +354,7 @@ process.replicates <- function(input, replicateFun=stats::median, ...) {
 
 process.segment <- function(input, segmentArgs=process.default("segmentArgs"), ...) {
 	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array inheriting object")
 	
 	# Process
 	array <- input
@@ -360,7 +362,7 @@ process.segment <- function(input, segmentArgs=process.default("segmentArgs"), .
 	for(i in 1:length(segmentArgs)) {
 		# Build and check call
 		segmentCall <- try(parse(text=sprintf("regions <- array$DNAcopy(verbose=0, %s)", segmentArgs[i])), silent=TRUE)
-		if(is(segmentCall, "try-error")) stop(sprintf("Parse error for DNAcopy profile #%i", i))
+		if(is(segmentCall, "try-error")) stop(sprintf("Parse error in DNAcopy profile #%i", i))
 		
 		# Apply call
 		eval(segmentCall)
@@ -377,7 +379,7 @@ process.segment <- function(input, segmentArgs=process.default("segmentArgs"), .
 
 process.spatial <- function(input, outDirectory, ...) {
 	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array inheriting object")
 	
 	# Process
 	input$spatial(filename=sprintf("%s/%s.spatial.png", outDirectory, input$name))
@@ -387,7 +389,7 @@ process.spatial <- function(input, outDirectory, ...) {
 
 process.waca <- function(input, ...) {
 	# Checks
-	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array object")
+	if(!is(input, "cghRA.array")) stop("'input' must be a cghRA.array inheriting object")
 	
 	# Process
 	input$WACA()
