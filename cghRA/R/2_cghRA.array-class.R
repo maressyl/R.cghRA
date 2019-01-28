@@ -502,6 +502,41 @@ WACA = function() {
 			forceBiasOrdering = FALSE
 		)
 	)
+},
+
+waviness = function(dist=c(0, 99), nrep=100, ratio=c(0, 99)) {
+"Array quality metric quantifying narrow wave artefacts by comparing local and remote log-ratio differences. Arrays with perfectly random noise distribution have a waviness score of 1, the score increases as waves become clearer.
+- dist    : integer vector, the distances between probes to consider (in probes which will be ignored between them).
+- nrep    : single integer value, the maximum number of replicates to compute for each 'dist', by considering different probe sets. Replicates are averaged between ratio computation.
+- ratio   : integer vector of length two, the resulting score will be the ratio between the result at dist=ratio[2] and dist=ratio[1]. Use NULL to get the raw values for all 'dist' and replicates as a matrix instead."
+	
+	# Storage
+	mtx <- matrix(as.numeric(NA), nrow=length(dist), ncol=nrep, dimnames=list(dist, NULL))
+	
+	# Extract log-ratios once
+	LR <- .self$extract(expression(!is.na(logRatio) & !is.na(chrom)), "logRatio")
+	
+	for(skip.total in dist) {
+		# Rotate masks for a given distance
+		for(skip.before in 0:min(skip.total, nrep-1L)) {
+			# Mask log-ratios
+			mask <- c(rep(FALSE, skip.before), TRUE, rep(FALSE, skip.total - skip.before))
+			x <- LR[mask]
+			
+			# Compute difference
+			mtx[ as.character(skip.total) , skip.before + 1L ] <- median(abs(diff(x)))
+		}
+	}
+	
+	if(length(ratio) == 2L) {
+		# Return a single metric
+		out <- mean(mtx[ as.character(ratio[2]) ], na.rm=TRUE) / mean(mtx[ as.character(ratio[1]) ], na.rm=TRUE)
+	} else {
+		# Return the full matrix
+		out <- mtx
+	}
+	
+	return(out)
 }
 
 	)

@@ -109,6 +109,12 @@
     \item{\code{WACA()}:}{
       Apply the Waves aCGH Correction Algorithm (Lepretre et al. 2009) to the array logRatios.
     }
+    \item{\code{waviness(dist = , nrep = , ratio = )}:}{
+      Array quality metric quantifying narrow wave artefacts by comparing local and remote log-ratio differences. Arrays with perfectly random noise distribution have a waviness score of 1, the score increases as waves become clearer.\cr
+      - \strong{dist}    : integer vector, the distances between probes to consider (in probes which will be ignored between them).\cr
+      - \strong{nrep}    : single integer value, the maximum number of replicates to compute for each 'dist', by considering different probe sets. Replicates are averaged between ratio computation.\cr
+      - \strong{ratio}   : integer vector of length two, the resulting score will be the ratio between the result at dist=ratio[2] and dist=ratio[1]. Use NULL to get the raw values for all 'dist' and replicates as a matrix instead.
+    }
   }
   The following methods are inherited (from the corresponding class):
   \itemize{
