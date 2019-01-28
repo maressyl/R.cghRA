@@ -530,7 +530,7 @@ waviness = function(dist=c(0, 99), nrep=100, ratio=c(0, 99)) {
 	
 	if(length(ratio) == 2L) {
 		# Return a single metric
-		out <- mean(mtx[ as.character(ratio[2]) ], na.rm=TRUE) / mean(mtx[ as.character(ratio[1]) ], na.rm=TRUE)
+		out <- mean(mtx[ as.character(ratio[2]) ,], na.rm=TRUE) / mean(mtx[ as.character(ratio[1]) ,], na.rm=TRUE)
 	} else {
 		# Return the full matrix
 		out <- mtx
