@@ -1,9 +1,10 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.7.1 (2019-01-28)}{
+\section{Changes in version 1.7.1 (2019-01-31)}{
   \itemize{
     \item{Argument checks harmonized in process() step functions.}
     \item{cghRA.array$waviness() method added.}
+    \item{model.auto() now handles NA log-ratios.}
   }
 }
 \section{Changes in version 1.7.0 (2018-10-02)}{

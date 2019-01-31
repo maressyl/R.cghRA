@@ -31,9 +31,12 @@ model.auto = function(
 	method <- match.arg(method)
 	if(defWidth > maxWidth || defWidth < minWidth) warning("'defWidth' is outside the interval defined by 'minWidth' and 'maxWidth'")
 	
+	# Segment filter
+	segFilter <- ! segChroms %in% exclude & !is.na(segLogRatios) & segLengths > 0L
+	
 	# Log-ratio related Copy Numbers (LCN)
 	segLCN <- LCN(segLogRatios, exact=TRUE)
-	segWeights <- segLengths[ ! segChroms %in% exclude ]
+	segWeights <- segLengths[ segFilter ]
 	segWeights <- segWeights / sum(segWeights)
 	
 	# Bandwidth testing
@@ -51,7 +54,7 @@ model.auto = function(
 	repeat {
 		# Test bandwidth
 		testDensity <- stats::density(
-			x = segLCN[ ! segChroms %in% exclude ],
+			x = segLCN[ segFilter ],
 			bw = bw,
 			kernel = "gaussian",
 			weights = segWeights,
@@ -107,8 +110,8 @@ model.auto = function(
 		
 		if(nPeaks > 0L) {
 			# Segments to Model
-			stm <- copies(segLCN[ ! segChroms %in% exclude ], from="LCN", center=scores[b, "center"], width=scores[b, "width"], ploidy=scores[b, "ploidy"], exact=TRUE)
-			stm <- stats::weighted.mean(abs(stm - round(stm)), segLengths[ ! segChroms %in% exclude ])
+			stm <- copies(segLCN[ segFilter ], from="LCN", center=scores[b, "center"], width=scores[b, "width"], ploidy=scores[b, "ploidy"], exact=TRUE)
+			stm <- stats::weighted.mean(abs(stm - round(stm)), segLengths[ segFilter ])
 			scores[b, "stm"] <- stm
 		}
 		
