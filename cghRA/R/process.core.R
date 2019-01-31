@@ -284,7 +284,6 @@ process.parse <- function(input, design, probeParser=Agilent.probes, probeArgs=l
 	# Checks
 	if(!is.character(input) || length(input) != 1 || is.na(input) || !file.exists(input))     stop("'input' must be an existing file name")
 	if(!is.character(design) || length(design) != 1 || is.na(design) || !file.exists(design)) stop("'design' must be an existing file name")
-	if(!grepl("\\.rdt$", input, ignore.case=TRUE))                                            stop("'input' must be a \".rdt\" file")
 	if(!grepl("\\.rdt$", design, ignore.case=TRUE))                                           stop("'design' must be a \".rdt\" file")
 	
 	# Parse
