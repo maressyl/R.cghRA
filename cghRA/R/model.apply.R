@@ -39,7 +39,7 @@ model.apply = function(
 		segGroups <- integer(length(segChroms))
 		segGroups[1] <- g
 		for(i in 2:length(segChroms)) {
-			if(segChroms[i-1] != segChroms[i] || segEnds[i-1] != segStarts[i] || segCopies[i-1] != segCopies[i]) g <- g + 1
+			if(segChroms[i-1] != segChroms[i] || segEnds[i-1] != segStarts[i] || is.na(segCopies[i-1]) || is.na(segCopies[i]) || segCopies[i-1] != segCopies[i]) g <- g + 1
 			segGroups[i] <- g
 		}
 		

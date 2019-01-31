@@ -5,6 +5,7 @@
     \item{Argument checks harmonized in process() step functions.}
     \item{cghRA.array$waviness() method added.}
     \item{model.auto() now handles NA log-ratios.}
+    \item{copies() now handles NA log-ratios.}
   }
 }
 \section{Changes in version 1.7.0 (2018-10-02)}{
