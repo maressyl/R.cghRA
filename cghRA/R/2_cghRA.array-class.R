@@ -504,11 +504,12 @@ WACA = function() {
 	)
 },
 
-waviness = function(dist=c(0, 99), nrep=100, ratio=c(0, 99)) {
+waviness = function(dist=c(0, 99), nrep=100, ratio=c(0, 99), quantile=0.5) {
 "Array quality metric quantifying narrow wave artefacts by comparing local and remote log-ratio differences. Arrays with perfectly random noise distribution have a waviness score of 1, the score increases as waves become clearer.
-- dist    : integer vector, the distances between probes to consider (in probes which will be ignored between them).
-- nrep    : single integer value, the maximum number of replicates to compute for each 'dist', by considering different probe sets. Replicates are averaged between ratio computation.
-- ratio   : integer vector of length two, the resulting score will be the ratio between the result at dist=ratio[2] and dist=ratio[1]. Use NULL to get the raw values for all 'dist' and replicates as a matrix instead."
+- dist       : integer vector, the distances between probes to consider (in probes which will be ignored between them).
+- nrep       : single integer value, the maximum number of replicates to compute for each 'dist', by considering different probe sets. Replicates are averaged between ratio computation.
+- ratio      : integer vector of length two, the resulting score will be the ratio between the result at dist=ratio[2] and dist=ratio[1]. Use NULL to get the raw values for all 'dist' and replicates as a matrix instead.
+- quantile   : single numeric value between 0 and 1, the quantile to use as a representative value of all probe differences (default is the median)."
 	
 	# Storage
 	mtx <- matrix(as.numeric(NA), nrow=length(dist), ncol=nrep, dimnames=list(dist, NULL))
@@ -524,7 +525,7 @@ waviness = function(dist=c(0, 99), nrep=100, ratio=c(0, 99)) {
 			x <- LR[mask]
 			
 			# Compute difference
-			mtx[ as.character(skip.total) , skip.before + 1L ] <- median(abs(diff(x)))
+			mtx[ as.character(skip.total) , skip.before + 1L ] <- quantile(abs(diff(x)), probs=quantile[1])
 		}
 	}
 	
