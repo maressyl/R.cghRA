@@ -3,6 +3,11 @@ Comparative Genomic Hybridization R Analysis
 
 R package to interactively perform CGH array analysis.
 
+![Github version](https://bioinformatics.ovsa.fr/badge.php?package=cghRA)
+![CRAN version](https://www.r-pkg.org/badges/version-ago/cghRA)
+![CRAN total downloads](https://cranlogs.r-pkg.org/badges/grand-total/cghRA)
+![CRAN monthly downloads](https://cranlogs.r-pkg.org/badges/cghRA)
+
 
 Availability
 ------------
