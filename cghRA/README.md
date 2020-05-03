@@ -19,7 +19,7 @@ A short presentation of the project can be found on my personnal website.
 Release sources and builds can be found in the CRAN repository :
 
 * **WWW** : https://CRAN.R-project.org/package=cghRA
-* **R** : install.packages("cghRA")
+* **R** : `install.packages("cghRA")`
 
 Development sources are freely available on GitHub :
 
