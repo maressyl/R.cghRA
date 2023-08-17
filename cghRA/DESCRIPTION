@@ -1,11 +1,11 @@
 Package: cghRA
 Type: Package
 Title: Array CGH Data Analysis and Visualization
-Version: 1.7.1
-Date: 2019-01-31
+Version: 1.7.2
+Date: 2023-08-17
 Author: Sylvain Mareschal
-Maintainer: Sylvain Mareschal <maressyl@gmail.com>
-URL: http://www.ovsa.fr/cghRA
+Maintainer: Sylvain Mareschal <mareschal@ovsa.fr>
+URL: https://www.ovsa.fr/cghRA
 BugReports: https://github.com/maressyl/R.cghRA/issues
 Description: Provides functions to import data from Agilent CGH arrays and process them according to the cghRA workflow. Implements several algorithms such as WACA, STEPS and cnvScore and an interactive graphical interface.
 License: GPL (>= 3)

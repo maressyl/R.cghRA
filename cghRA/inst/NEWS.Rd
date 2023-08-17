@@ -1,5 +1,10 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
+\section{Changes in version 1.7.2 (2023-08-17)}{
+  \itemize{
+    \item{Minor fixes suggested by R CMD check, back on CRAN with Rgb.}
+  }
+}
 \section{Changes in version 1.7.1 (2019-01-31)}{
   \itemize{
     \item{Argument checks harmonized in process() step functions.}
