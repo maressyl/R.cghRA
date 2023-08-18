@@ -1,0 +1,30 @@
+# R package reference generated from DESCRIPTION metadata
+citation(auto = meta)
+
+# Article
+bibentry(
+	bibtype = "Article",
+	title = "Application of the cghRA framework to the genomic characterization of Diffuse Large B-Cell Lymphoma",
+	author = c(
+		person(c("Sylvain", "Mareschal")),
+		person(c("Philippe", "Ruminy")),
+		person(c("Marion", "Alcantara")),
+		person(c("Celine", "Villenet")),
+		person(c("Martin", "Figeac")),
+		person(c("Sydney", "Dubois")),
+		person(c("Philippe", "Bertrand")),
+		person(c("Abdelilah", "Bouzelfen")),
+		person(c("Pierre-Julien", "Viailly")),
+		person(c("Dominique", "Penther")),
+		person(c("Herve", "Tilly")),
+		person(c("Christian", "Bastard")),
+		person(c("Fabrice", "Jardin"))
+	),
+	year = "2017",
+	volume = "33",
+	number = "19",
+	pages = "2977-2985",
+	journal = "Bioinformatics",
+    doi = "10.1093/bioinformatics/btx309"
+)
+

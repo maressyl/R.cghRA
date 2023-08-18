@@ -1,8 +1,9 @@
 \name{cghRA-news}
 \title{cghRA package NEWS}
-\section{Changes in version 1.7.2 (2023-08-17)}{
+\section{Changes in version 1.7.2 (2023-08-18)}{
   \itemize{
     \item{Minor fixes suggested by R CMD check, back on CRAN with Rgb.}
+    \item{Article added to DESCRIPTION and CITATION.}
   }
 }
 \section{Changes in version 1.7.1 (2019-01-31)}{
